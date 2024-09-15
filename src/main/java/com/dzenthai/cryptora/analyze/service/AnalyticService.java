@@ -96,7 +96,7 @@ public class AnalyticService {
             }
 
             Bar bar = new BaseBar(
-                    Duration.ofMinutes(1),
+                    Duration.ofSeconds(10),
                     endTime,
                     DecimalNum.valueOf(quote.getPrice()),
                     DecimalNum.valueOf(quote.getPrice()),
