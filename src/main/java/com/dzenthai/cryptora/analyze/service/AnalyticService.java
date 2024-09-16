@@ -38,7 +38,7 @@ public class AnalyticService {
     @Transactional
     public void analyzeAndGenerateSignals() {
 
-        log.info("Analytic Service | Время: {}", LocalDateTime.now());
+        log.info("Analytic Service | Datetime: {}", LocalDateTime.now());
 
         List<Quote> quotes = quoteService.getAllQuotes();
         redisService.saveQuotesToRedis(quotes);
@@ -67,11 +67,11 @@ public class AnalyticService {
             String shortCut = ticker.replaceAll("USDT", "");
 
             if (shortTermValue.isGreaterThan(longTermValue) && latestPrice.isGreaterThan(shortTermValue)) {
-                log.info("Analytic Service | Сигнал для {}: КУПИТЬ", shortCut);
+                log.info("Analytic Service | {}: BUY", shortCut);
             } else if (shortTermValue.isLessThan(longTermValue) && latestPrice.isLessThan(shortTermValue)) {
-                log.info("Analytic Service | Сигнал для {}: ПРОДАТЬ", shortCut);
+                log.info("Analytic Service | {}: SELL", shortCut);
             } else {
-                log.info("Analytic Service | Сигнал для {}: ПОДОЖДАТЬ", shortCut);
+                log.info("Analytic Service | {}: HOLD", shortCut);
             }
         }
         redisService.deleteQuotesFromRedis();
@@ -85,12 +85,12 @@ public class AnalyticService {
             ZonedDateTime endTime = quote.getTime().atZone(ZoneOffset.UTC);
 
             if (lastBarEndTime != null) {
-                log.debug("Analytic Service | Текущее время окончания бара: {}, Время последнего бара: {}",
+                log.debug("Analytic Service | Current bar end time: {}, Last bar time: {}",
                         endTime, lastBarEndTime);
             }
 
             if (lastBarEndTime != null && !endTime.isAfter(lastBarEndTime)) {
-                log.warn("Analytic Service | Бар с временем окончания {} не может быть добавлен, так как его время меньше или равно времени последнего бара {}",
+                log.warn("Analytic Service | The bar with end time {} cannot be added because its time is less than or equal to the time of the last bar {}",
                         endTime, lastBarEndTime);
                 continue;
             }
@@ -109,7 +109,7 @@ public class AnalyticService {
 
             lastBarEndTime = endTime;
 
-            log.debug("Analytic Service | Добавлен бар: {}", bar);
+            log.debug("Analytic Service | Bar added: {}", bar);
         }
         return series;
     }

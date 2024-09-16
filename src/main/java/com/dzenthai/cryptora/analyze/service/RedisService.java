@@ -27,20 +27,20 @@ public class RedisService {
         for (Quote quote : quotes) {
             String key = "quote:" + quote.getTicker() + ":" + quote.getTime().format(formatter);
             String value = quote.getPrice().toString();
-            log.debug("Redis Service | Сохранение котировок в базу данных redis, ключ: {}, значение: {}", key, value);
+            log.debug("Redis Service | Saving quotes to Redis database, key: {}, value: {}", key, value);
             redisTemplate.opsForValue().set(key, value);
         }
     }
 
     public List<Quote> getQuotesFromRedis() {
-        log.debug("Redis Service | Получение списка котировок из базы данных redis");
+        log.debug("Redis Service | Fetching list of quotes from Redis database");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
         return Objects.requireNonNull(redisTemplate.keys("quote:*")).stream()
                 .map(key -> {
                     try {
                         String[] parts = key.split(":");
                         if (parts.length < 3) {
-                            log.warn("Redis Service | Неправильный формат ключа в Redis: {}", key);
+                            log.warn("Redis Service | Incorrect key format in Redis: {}", key);
                             return null;
                         }
                         String ticker = parts[1];
@@ -49,7 +49,7 @@ public class RedisService {
                         BigDecimal price = new BigDecimal(Objects.requireNonNull(redisTemplate.opsForValue().get(key)));
                         return Quote.builder().ticker(ticker).time(time).price(price).build();
                     } catch (DateTimeParseException e) {
-                        log.error("Redis Service | Ошибка при парсинге времени из ключа: {}", key, e);
+                        log.error("Redis Service | Error parsing time from key: {}", key, e);
                         return null;
                     }
                 })
@@ -71,10 +71,10 @@ public class RedisService {
                 .collect(Collectors.toList());
 
         if (!keysToDelete.isEmpty()) {
-            log.debug("Redis Service | Удаление котировок из базы данных Redis, ключи: {}", keysToDelete);
+            log.debug("Redis Service | Deleting quotes from Redis database, keys: {}", keysToDelete);
             redisTemplate.delete(keysToDelete);
         } else {
-            log.debug("Redis Service | Нет котировок для удаления, все котировки актуальны.");
+            log.debug("Redis Service | No quotes to delete; All quotes are up to date.");
         }
     }
 }

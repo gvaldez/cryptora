@@ -26,19 +26,19 @@ public class QuoteService {
 
     @Transactional
     public void clear(LocalDateTime upTo) {
-        log.debug("Quote Service | Очистка котировок старше, чем: {}", upTo);
+        log.debug("Quote Service | Clearing quotes older than: {}", upTo);
         quoteRepo.deleteAllByTimeLessThan(upTo);
     }
 
     @Transactional
     public void save(String ticker, BigDecimal price, LocalDateTime time) {
-        log.debug("Quote Service | Сохранение котировки. ticker: {}, price: {}, time: {}", ticker, price, time);
+        log.debug("Quote Service | Saving quote, ticker: {}, price: {}, time: {}", ticker, price, time);
         Quote quote = Quote.builder()
                 .ticker(ticker)
                 .price(price)
                 .time(time)
                 .build();
         quoteRepo.save(quote);
-        log.debug("Quote Service | Успешное сохранение котировки: {}", quote);
+        log.debug("Quote Service | Quote successfully saved: {}", quote);
     }
 }

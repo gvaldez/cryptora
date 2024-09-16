@@ -26,7 +26,7 @@ public class FetchService {
 
     @Transactional
     public void fetchNewQuotes() {
-        log.debug("Fetch Service | Получение новых котировок");
+        log.debug("Fetch Service | Fetching new quotes");
         List<String> symbols = List.of("BTCUSDT", "ETHUSDT", "TONUSDT");
         LocalDateTime fetchTime = LocalDateTime.now();
         symbols.forEach(symbol -> {
@@ -36,9 +36,9 @@ public class FetchService {
                 BigDecimal price = new BigDecimal(tickerPrice.getPrice());
                 quoteService.save(ticker, price, fetchTime);
             } catch (BinanceApiException e) {
-                log.error("Fetch Service | Ошибка Binance API при получении котировок: {}, ошибка: ", symbol, e);
+                log.error("Fetch Service | Binance API error while fetching, quotes: {}, exception: ", symbol, e);
             } catch (Exception e) {
-                log.error("Fetch Service | Непредвиденная ошибка при получении котировок: {}, ошибка: ", symbol, e);
+                log.error("Fetch Service | Unexpected error while fetching, quotes: {}, exception: ", symbol, e);
             }
         });
     }
@@ -48,9 +48,9 @@ public class FetchService {
         LocalDateTime cutoffTime = LocalDateTime.now().minusSeconds(10);
         try {
             quoteService.clear(cutoffTime);
-            log.debug("Fetch Service | Успешная очистка котировок. Время удаления: {}", cutoffTime);
+            log.debug("Fetch Service | Quotes successfully cleared. Deletion time: {}", cutoffTime);
         } catch (BinanceApiException e) {
-            log.error("Fetch Service | Ошибка при очистке котировок. Время удаления: {}, exception: ", cutoffTime, e);
+            log.error("Fetch Service | Error while clearing quotes. Deletion time: {}, exception: ", cutoffTime, e);
         }
     }
 }

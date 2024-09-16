@@ -47,11 +47,11 @@ public class AppScheduler {
                 .thenCompose(analyze -> analyzeAndGenerateSignalsAsync())
                 .thenCompose(clear -> clearOldQuotesAsync())
                 .exceptionally(ex -> {
-                    log.error("Application Scheduler | Ошибка при выполнении операций: {}", ex.getMessage(), ex);
+                    log.error("Application Scheduler | Error executing operations: {}", ex.getMessage(), ex);
 
                     retryFetchNewQuotes();
 
-                    throw new BinanceApiException("Application Scheduler | Критическая ошибка при выполнении задач", ex);
+                    throw new BinanceApiException("Application Scheduler | Critical error executing tasks", ex);
                 });
     }
 
@@ -60,7 +60,7 @@ public class AppScheduler {
             Thread.sleep(5000);
             fetchService.fetchNewQuotes();
         } catch (InterruptedException e) {
-            log.error("Application Scheduler | Ошибка при повторной попытке получения новых котировок: {}", e.getMessage(), e);
+            log.error("Application Scheduler | Error during retry to fetch new quotes: {}", e.getMessage(), e);
             Thread.currentThread().interrupt();
         }
     }
