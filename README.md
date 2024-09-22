@@ -61,7 +61,7 @@ based on market movements and analytics.
 
 3. **Build the Project Using Gradle**
    ```bash
-   ./gradlew build```
+   ./gradlew build
    ```
 
 4. **Run the Application Using Docker**
