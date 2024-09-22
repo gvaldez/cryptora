@@ -1,8 +1,8 @@
-# Crypto-Tracker-Bot
+# Cryptora-Analyze-Service
 
 ## **Description**
 
-Crypto-Tracker-Bot is a Spring Boot application that tracks cryptocurrencies in real-time using the Binance API. It
+Cryptora-Analyze-Service is a Spring Boot application that tracks cryptocurrencies in real-time using the Binance API. It
 monitors price trends, analyzing growth and decline, and provides users with real-time data to make informed decisions
 based on market movements and analytics.
 
