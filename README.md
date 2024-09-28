@@ -51,8 +51,8 @@ based on market movements and analytics.
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/dzenthai/Crypto-Tracker-Bot.git
-   cd Crypto-Tracker-Bot
+   git clone https://github.com/dzenthai/Cryptora-Analyze-Service.git
+   cd Cryptora-Analyze-Service
    ```
 
 2. **Add Environment Variables**
