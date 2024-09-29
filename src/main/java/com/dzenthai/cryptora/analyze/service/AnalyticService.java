@@ -1,9 +1,7 @@
 package com.dzenthai.cryptora.analyze.service;
 
 import com.dzenthai.cryptora.analyze.entity.Quote;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.ta4j.core.Bar;
@@ -27,44 +25,53 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
-@EnableScheduling
 public class AnalyticService {
 
     private final QuoteService quoteService;
 
-    private final RedisService redisService;
+    private final int shortTimePeriod = 30;
+
+    private final int longTimePeriod = 100;
+
+    public AnalyticService(QuoteService quoteService) {
+        this.quoteService = quoteService;
+    }
 
     @Transactional
     public void analyzeAndGenerateSignals() {
 
         log.info("Analytic Service | Datetime: {}", LocalDateTime.now());
 
-        List<Quote> quotes = quoteService.getAllQuotes();
-        redisService.saveQuotesToRedis(quotes);
-
-        List<Quote> redisQuotes = redisService.getQuotesFromRedis();
-
-        Map<String, List<Quote>> quotesByTicker = redisQuotes.stream()
+        Map<String, List<Quote>> quotesByTicker = quoteService.getAllQuotes().stream()
                 .collect(Collectors.groupingBy(Quote::getTicker));
 
         for (Map.Entry<String, List<Quote>> entry : quotesByTicker.entrySet()) {
             String ticker = entry.getKey();
+
+            String shortCut = ticker.replaceAll("USDT", "");
+
             List<Quote> tickerQuotes = entry.getValue();
 
-            tickerQuotes.sort(Comparator.comparing(Quote::getTime));
+            tickerQuotes.sort(Comparator.comparing(Quote::getDatetime));
 
             BarSeries series = buildBarSeries(tickerQuotes);
 
-            SMAIndicator shortTermSMA = new SMAIndicator(new ClosePriceIndicator(series), 100);
-            SMAIndicator longTermSMA = new SMAIndicator(new ClosePriceIndicator(series), 200);
+            log.debug("Analytic Service | {}: Bar count: {}", shortCut, series.getBarCount());
+
+            if (series.getBarCount() < shortTimePeriod) {
+                log.warn("Analytic Service | {}: Not enough bars to calculate SMA. Skipping...", shortCut);
+                continue;
+            }
+
+            log.debug("Analytic Service | First bar: {}", series.getFirstBar());
+            log.debug("Analytic Service | Last bar: {}", series.getLastBar());
+
+            SMAIndicator shortTermSMA = new SMAIndicator(new ClosePriceIndicator(series), shortTimePeriod);
+            SMAIndicator longTermSMA = new SMAIndicator(new ClosePriceIndicator(series), longTimePeriod);
 
             Num latestPrice = series.getLastBar().getClosePrice();
-
             Num shortTermValue = shortTermSMA.getValue(series.getEndIndex());
             Num longTermValue = longTermSMA.getValue(series.getEndIndex());
-
-            String shortCut = ticker.replaceAll("USDT", "");
 
             if (shortTermValue.isGreaterThan(longTermValue) && latestPrice.isGreaterThan(shortTermValue)) {
                 log.info("Analytic Service | {}: BUY", shortCut);
@@ -74,15 +81,18 @@ public class AnalyticService {
                 log.info("Analytic Service | {}: HOLD", shortCut);
             }
         }
-        redisService.deleteQuotesFromRedis();
     }
 
     private BarSeries buildBarSeries(List<Quote> quotes) {
         BarSeries series = new BaseBarSeries();
+
+        series.setMaximumBarCount(Math.max(longTimePeriod, shortTimePeriod));
+
         ZonedDateTime lastBarEndTime = null;
 
         for (Quote quote : quotes) {
-            ZonedDateTime endTime = quote.getTime().atZone(ZoneOffset.UTC);
+
+            ZonedDateTime endTime = quote.getDatetime().atZone(ZoneOffset.UTC);
 
             if (lastBarEndTime != null) {
                 log.debug("Analytic Service | Current bar end time: {}, Last bar time: {}",
@@ -96,14 +106,14 @@ public class AnalyticService {
             }
 
             Bar bar = new BaseBar(
-                    Duration.ofSeconds(10),
+                    Duration.ofMinutes(15),
                     endTime,
-                    DecimalNum.valueOf(quote.getPrice()),
-                    DecimalNum.valueOf(quote.getPrice()),
-                    DecimalNum.valueOf(quote.getPrice()),
-                    DecimalNum.valueOf(quote.getPrice()),
-                    DecimalNum.valueOf(1),
-                    DecimalNum.valueOf(1)
+                    DecimalNum.valueOf(quote.getOpenPrice()),
+                    DecimalNum.valueOf(quote.getHighPrice()),
+                    DecimalNum.valueOf(quote.getLowPrice()),
+                    DecimalNum.valueOf(quote.getClosePrice()),
+                    DecimalNum.valueOf(quote.getVolume()),
+                    DecimalNum.valueOf(quote.getAmount())
             );
             series.addBar(bar);
 

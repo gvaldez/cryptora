@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-
 @Data
 @Builder
 @Document(collection = "quotes")
@@ -23,10 +22,24 @@ public class Quote {
     @Field(name = "ticker")
     private String ticker;
 
-    @Field(name = "price")
-    private BigDecimal price;
+    @Field(name = "open_price")
+    private BigDecimal openPrice;
 
-    @Field(name = "time")
-    private LocalDateTime time;
+    @Field(name = "high_price")
+    private BigDecimal highPrice;
 
+    @Field(name = "low_price")
+    private BigDecimal lowPrice;
+
+    @Field(name = "close_price")
+    private BigDecimal closePrice;
+
+    @Field(name = "volume")
+    private BigDecimal volume;
+
+    @Field(name = "amount")
+    private BigDecimal amount;
+
+    @Field(name = "datetime")
+    private LocalDateTime datetime;
 }

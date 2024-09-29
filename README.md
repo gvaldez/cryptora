@@ -2,7 +2,8 @@
 
 ## **Description**
 
-Cryptora-Analyze-Service is a Spring Boot application that tracks cryptocurrencies in real-time using the Binance API. It
+Cryptora-Analyze-Service is a Spring Boot application that tracks cryptocurrencies in real-time using the Binance API.
+It
 monitors price trends, analyzing growth and decline, and provides users with real-time data to make informed decisions
 based on market movements and analytics.
 
@@ -13,7 +14,7 @@ based on market movements and analytics.
 - **Real-time Data Fetching**: The application integrates with the Binance API to retrieve live cryptocurrency data.
   Users can track any available cryptocurrencies.
 
-- **Cryptocurrency History Storage**: Redis is used to store the history of cryptocurrency prices, allowing users to
+- **Cryptocurrency History Storage**: MongoDB is used to store the history of cryptocurrency prices, allowing users to
   analyze historical growth and decline trends.
 
 - **Price Trend Analysis**: With stored price data, users can perform trend analysis on cryptocurrency growth and
@@ -29,8 +30,6 @@ based on market movements and analytics.
 
 - **MongoDB**: A NoSQL database used for storing real-time cryptocurrency quotes.
 
-- **Redis**: A NoSQL storage solution used for saving cryptocurrency price history (prices and timestamps).
-
 - **Binance API**: External API for retrieving up-to-date cryptocurrency price information in real-time.
 
 - **Ta4j**: A library used for analyzing price movements, including growth and decline of cryptocurrencies.
@@ -44,7 +43,7 @@ based on market movements and analytics.
 
 ### **Prerequisites**
 
-- Java 17 or higher
+- Java 21 or higher
 - Docker
 
 ### **Installation and Startup Steps**
@@ -56,8 +55,8 @@ based on market movements and analytics.
    ```
 
 2. **Add Environment Variables**
-   Create an .env file and add the necessary environment variables such as Binance API key and secret, along with Redis
-   and MongoDB configurations.
+   Create an .env file and add the necessary environment variables such as Binance API key and secret, along with
+   MongoDB configurations.
 
 3. **Build the Project Using Gradle**
    ```bash
@@ -68,7 +67,7 @@ based on market movements and analytics.
    ```bash
    docker-compose up --build
    ```
-   
+
 ---
 
 ## **Additional Information**
@@ -76,24 +75,36 @@ based on market movements and analytics.
 ### **Changing Cryptocurrency Pairs**
 
 In the `FetchService` class, you can change the cryptocurrency pairs by modifying the line:
+
    ```java
    List<String> symbols = List.of("BTCUSDT", "YourCryptoPair");
 ```
 
 ### **Adjusting Data Fetching Interval**
 
-To modify the interval at which the application fetches and analyzes price data, update the following line in the `AppScheduler` class:
+To modify the interval at which the application fetches and analyzes price data, update the following line in
+the `AppScheduler` class:
 
 ```java
+
 @Scheduled(fixedRate = 10000) // Time is in milliseconds
 public void executeInSequence() {
 }
 ```
 
+There is a possibility to change the values of shortTimePeriod and longTimePeriod in the AnalyticService class.
+
+```java
+private final int shortTimePeriod = 30;
+
+private final int longTimePeriod = 100;
+```
+
 Also, it is recommended to adjust the duration in the `AnalyticService` class to match, as shown below:
+
 ```java
 Bar bar = new BaseBar(
-        Duration.ofSeconds(10) // Time is in seconds
+        Duration.ofMinutes(15) // Time is in minutes
 );
 ```
 

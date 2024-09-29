@@ -26,7 +26,6 @@ repositories {
 dependencies {
 	implementation 'org.ta4j:ta4j-core:0.16'
 	implementation 'net.openhft.com.binance.api:binance-api-client:2.17.1'
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

@@ -4,36 +4,27 @@ services:
     restart: unless-stopped
     env_file: ./.env
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=$MONGODB_USER
-      - MONGO_INITDB_ROOT_PASSWORD=$MONGODB_PASSWORD
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
     ports:
       - $MONGODB_PORT:$MONGODB_PORT
     volumes:
       - db:/data/db
 
-  redis:
-    image: redis:latest
-    restart: unless-stopped
-    ports:
-      - $REDIS_PORT:$REDIS_PORT
-
   app:
     depends_on:
       - mongo_db
-      - redis
     build: .
-    restart: on-failure
+    restart: unless-stopped
     env_file: ./.env
     ports:
       - $SPRING_PORT:$SPRING_PORT
     environment:
       SPRING_APPLICATION_JSON: '{
-          "spring.data.mongodb.uri" : "mongodb://$MONGODB_USER:$MONGODB_PASSWORD@mongo_db:$MONGODB_PORT/$MONGODB_DATABASE?authSource=admin",
-          "spring.redis.host" : "$REDIS_HOST",
-          "spring.redis.port" : "$REDIS_PORT"
+          "spring.data.mongodb.uri" : "mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@mongo_db:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=admin"
         }'
     volumes:
-      - .m2:/root/.m2
+      - ~/.gradle:/home/gradle/.gradle
     stdin_open: true
     tty: true
 

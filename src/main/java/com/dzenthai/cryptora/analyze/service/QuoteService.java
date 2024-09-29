@@ -2,7 +2,6 @@ package com.dzenthai.cryptora.analyze.service;
 
 import com.dzenthai.cryptora.analyze.entity.Quote;
 import com.dzenthai.cryptora.analyze.repository.QuoteRepo;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +13,13 @@ import java.util.List;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class QuoteService {
 
     private final QuoteRepo quoteRepo;
+
+    public QuoteService(QuoteRepo quoteRepo) {
+        this.quoteRepo = quoteRepo;
+    }
 
     @Transactional
     public List<Quote> getAllQuotes() {
@@ -25,18 +27,17 @@ public class QuoteService {
     }
 
     @Transactional
-    public void clear(LocalDateTime upTo) {
-        log.debug("Quote Service | Clearing quotes older than: {}", upTo);
-        quoteRepo.deleteAllByTimeLessThan(upTo);
-    }
-
-    @Transactional
-    public void save(String ticker, BigDecimal price, LocalDateTime time) {
-        log.debug("Quote Service | Saving quote, ticker: {}, price: {}, time: {}", ticker, price, time);
+    public void save(String ticker, BigDecimal open, BigDecimal high, BigDecimal low, BigDecimal close, BigDecimal amount, BigDecimal volume, LocalDateTime time) {
+        log.debug("Quote Service | Saving quote, ticker: {}, close price: {}, time: {}", ticker, close, time);
         Quote quote = Quote.builder()
                 .ticker(ticker)
-                .price(price)
-                .time(time)
+                .openPrice(open)
+                .highPrice(high)
+                .lowPrice(low)
+                .closePrice(close)
+                .amount(amount)
+                .volume(volume)
+                .datetime(time)
                 .build();
         quoteRepo.save(quote);
         log.debug("Quote Service | Quote successfully saved: {}", quote);

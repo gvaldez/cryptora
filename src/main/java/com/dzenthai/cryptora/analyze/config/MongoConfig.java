@@ -8,10 +8,13 @@ import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 
 @Configuration
-@RequiredArgsConstructor
 public class MongoConfig {
 
     private final ApplicationContext applicationContext;
+
+    public MongoConfig(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
 
     @PostConstruct
     public void init() {
