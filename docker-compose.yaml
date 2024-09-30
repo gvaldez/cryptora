@@ -4,10 +4,10 @@ services:
     restart: unless-stopped
     env_file: ./.env
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USER}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=123456
     ports:
-      - $MONGODB_PORT:$MONGODB_PORT
+      - "27017:27017"
     volumes:
       - db:/data/db
 
@@ -18,10 +18,10 @@ services:
     restart: unless-stopped
     env_file: ./.env
     ports:
-      - $SPRING_PORT:$SPRING_PORT
+      - "8088:8088"
     environment:
       SPRING_APPLICATION_JSON: '{
-          "spring.data.mongodb.uri" : "mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@mongo_db:${MONGODB_PORT}/${MONGODB_DATABASE}?authSource=admin"
+          "spring.data.mongodb.uri" : "mongodb://root:123456@mongo_db:27017/binance?authSource=admin"
         }'
     volumes:
       - ~/.gradle:/home/gradle/.gradle
