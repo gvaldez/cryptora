@@ -3,6 +3,7 @@ package com.dzenthai.cryptora.analyze.service;
 import com.dzenthai.cryptora.analyze.entity.Quote;
 import com.dzenthai.cryptora.analyze.facade.MessageSender;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.ta4j.core.Bar;
@@ -29,15 +30,21 @@ import java.util.stream.Collectors;
 public class AnalyticService {
 
     private final QuoteService quoteService;
-    private final MessageSender messageSender;
-    private final int shortTimePeriod;
-    private final int longTimePeriod;
 
-    public AnalyticService(QuoteService quoteService, MessageSender messageSender) {
+    private final MessageSender messageSender;
+
+    @Value("${cryptora.short.time.period}")
+    private Integer shortTimePeriod;
+
+    @Value("${cryptora.long.time.period}")
+    private int longTimePeriod;
+
+    public AnalyticService(
+            QuoteService quoteService,
+            MessageSender messageSender
+    ) {
         this.quoteService = quoteService;
         this.messageSender = messageSender;
-        this.shortTimePeriod = 50;
-        this.longTimePeriod = 200;
     }
 
     @Transactional

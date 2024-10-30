@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface QuoteRepo extends MongoRepository<Quote, Long> {
+public interface QuoteRepo extends MongoRepository<Quote, String> {
 }
