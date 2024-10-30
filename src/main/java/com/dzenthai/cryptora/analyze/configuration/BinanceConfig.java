@@ -1,8 +1,7 @@
-package com.dzenthai.cryptora.analyze.config;
+package com.dzenthai.cryptora.analyze.configuration;
 
 import com.binance.api.client.BinanceApiClientFactory;
 import com.binance.api.client.BinanceApiRestClient;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

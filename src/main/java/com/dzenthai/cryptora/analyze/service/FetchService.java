@@ -3,14 +3,11 @@ package com.dzenthai.cryptora.analyze.service;
 import com.binance.api.client.BinanceApiRestClient;
 import com.binance.api.client.domain.market.Candlestick;
 import com.binance.api.client.domain.market.CandlestickInterval;
-import com.binance.api.client.domain.market.TickerPrice;
 import com.binance.api.client.exception.BinanceApiException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -29,35 +26,18 @@ public class FetchService {
 
     @Transactional
     public void fetchNewQuotes() {
-        log.debug("Fetch Service | Fetching new quotes");
+        log.debug("FetchService | Fetching new quotes");
         List<String> symbols = List.of("BTCUSDT", "ETHUSDT", "TONUSDT");
         symbols.forEach(symbol -> {
             try {
-                TickerPrice tickerPrice = binanceApiRestClient.getPrice(symbol);
+                var tickerPrice = binanceApiRestClient.getPrice(symbol);
                 List<Candlestick> candlesticks = binanceApiRestClient.getCandlestickBars(symbol, CandlestickInterval.ONE_MINUTE);
-                Candlestick candlestick = candlesticks.getLast();
-                String ticker = tickerPrice.getSymbol();
-                var openPrice = new BigDecimal(candlestick.getOpen());
-                var highPrice = new BigDecimal(candlestick.getHigh());
-                var lowPrice = new BigDecimal(candlestick.getLow());
-                var closePrice = new BigDecimal(candlestick.getClose());
-                var volume = new BigDecimal(candlestick.getVolume());
-                var amount = new BigDecimal(candlestick.getQuoteAssetVolume());
-                LocalDateTime fetchTime = LocalDateTime.now();
-                quoteService.save(
-                        ticker,
-                        openPrice,
-                        highPrice,
-                        lowPrice,
-                        closePrice,
-                        volume,
-                        amount,
-                        fetchTime
-                );
+                var quote = quoteService.addNewQuote(tickerPrice, candlesticks);
+                log.debug("FetchService | Quote successfully saved, quote: {}", quote);
             } catch (BinanceApiException e) {
-                log.error("Fetch Service | Binance API error while fetching, quotes: {}, exception: ", symbol, e);
+                log.error("FetchService | Binance API error while fetching, quotes: {}, exception: ", symbol, e);
             } catch (Exception e) {
-                log.error("Fetch Service | Unexpected error while fetching, quotes: {}, exception: ", symbol, e);
+                log.error("FetchService | Unexpected error while fetching, quotes: {}, exception: ", symbol, e);
             }
         });
     }

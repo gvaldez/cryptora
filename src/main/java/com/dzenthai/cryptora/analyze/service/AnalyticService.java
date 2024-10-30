@@ -1,6 +1,7 @@
 package com.dzenthai.cryptora.analyze.service;
 
 import com.dzenthai.cryptora.analyze.entity.Quote;
+import com.dzenthai.cryptora.analyze.facade.MessageSender;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,26 +30,33 @@ public class AnalyticService {
 
     private final QuoteService quoteService;
 
+    private final MessageSender messageSender;
+
     private final int shortTimePeriod = 30;
 
     private final int longTimePeriod = 100;
 
-    public AnalyticService(QuoteService quoteService) {
+    public AnalyticService(
+            QuoteService quoteService,
+            MessageSender messageSender
+    ) {
         this.quoteService = quoteService;
+        this.messageSender = messageSender;
     }
 
     @Transactional
     public void analyzeAndGenerateSignals() {
 
-        log.info("Analytic Service | Datetime: {}", LocalDateTime.now());
+        log.info("AnalyticService | Datetime: {}", LocalDateTime.now());
 
         Map<String, List<Quote>> quotesByTicker = quoteService.getAllQuotes().stream()
                 .collect(Collectors.groupingBy(Quote::getTicker));
 
         for (Map.Entry<String, List<Quote>> entry : quotesByTicker.entrySet()) {
-            String ticker = entry.getKey();
 
-            String shortCut = ticker.replaceAll("USDT", "");
+            var ticker = entry.getKey();
+
+            var shortCut = ticker.replaceAll("USDT", "");
 
             List<Quote> tickerQuotes = entry.getValue();
 
@@ -56,15 +64,15 @@ public class AnalyticService {
 
             BarSeries series = buildBarSeries(tickerQuotes);
 
-            log.debug("Analytic Service | {}: Bar count: {}", shortCut, series.getBarCount());
+            log.debug("AnalyticService | {}: Bar count: {}", shortCut, series.getBarCount());
 
             if (series.getBarCount() < shortTimePeriod) {
-                log.warn("Analytic Service | {}: Not enough bars to calculate SMA. Skipping...", shortCut);
+                log.warn("AnalyticService | {}: Not enough bars to calculate SMA. Skipping...", shortCut);
                 continue;
             }
 
-            log.debug("Analytic Service | First bar: {}", series.getFirstBar());
-            log.debug("Analytic Service | Last bar: {}", series.getLastBar());
+            log.debug("AnalyticService | First bar: {}", series.getFirstBar());
+            log.debug("AnalyticService | Last bar: {}", series.getLastBar());
 
             SMAIndicator shortTermSMA = new SMAIndicator(new ClosePriceIndicator(series), shortTimePeriod);
             SMAIndicator longTermSMA = new SMAIndicator(new ClosePriceIndicator(series), longTimePeriod);
@@ -74,17 +82,20 @@ public class AnalyticService {
             Num longTermValue = longTermSMA.getValue(series.getEndIndex());
 
             if (shortTermValue.isGreaterThan(longTermValue) && latestPrice.isGreaterThan(shortTermValue)) {
-                log.info("Analytic Service | {}: BUY", shortCut);
+                log.info("AnalyticService | {}: BUY", shortCut);
+                messageSender.send("Buy %s".formatted(shortCut));
             } else if (shortTermValue.isLessThan(longTermValue) && latestPrice.isLessThan(shortTermValue)) {
-                log.info("Analytic Service | {}: SELL", shortCut);
+                log.info("AnalyticService | {}: SELL", shortCut);
+                messageSender.send("Sell %s".formatted(shortCut));
             } else {
-                log.info("Analytic Service | {}: HOLD", shortCut);
+                log.info("AnalyticService | {}: HOLD", shortCut);
+                messageSender.send("Hold %s".formatted(shortCut));
             }
         }
     }
 
     private BarSeries buildBarSeries(List<Quote> quotes) {
-        BarSeries series = new BaseBarSeries();
+        var series = new BaseBarSeries();
 
         series.setMaximumBarCount(Math.max(longTimePeriod, shortTimePeriod));
 
@@ -95,17 +106,17 @@ public class AnalyticService {
             ZonedDateTime endTime = quote.getDatetime().atZone(ZoneOffset.UTC);
 
             if (lastBarEndTime != null) {
-                log.debug("Analytic Service | Current bar end time: {}, Last bar time: {}",
+                log.debug("AnalyticService | Current bar end time: {}, Last bar time: {}",
                         endTime, lastBarEndTime);
             }
 
             if (lastBarEndTime != null && !endTime.isAfter(lastBarEndTime)) {
-                log.warn("Analytic Service | The bar with end time {} cannot be added because its time is less than or equal to the time of the last bar {}",
+                log.warn("AnalyticService | The bar with end time {} cannot be added because its time is less than or equal to the time of the last bar {}",
                         endTime, lastBarEndTime);
                 continue;
             }
 
-            Bar bar = new BaseBar(
+            var bar = new BaseBar(
                     Duration.ofMinutes(15),
                     endTime,
                     DecimalNum.valueOf(quote.getOpenPrice()),
@@ -119,7 +130,7 @@ public class AnalyticService {
 
             lastBarEndTime = endTime;
 
-            log.debug("Analytic Service | Bar added: {}", bar);
+            log.debug("AnalyticService | Bar added: {}", bar);
         }
         return series;
     }

@@ -1,5 +1,7 @@
 package com.dzenthai.cryptora.analyze.service;
 
+import com.binance.api.client.domain.market.Candlestick;
+import com.binance.api.client.domain.market.TickerPrice;
 import com.dzenthai.cryptora.analyze.entity.Quote;
 import com.dzenthai.cryptora.analyze.repository.QuoteRepo;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.List;
 
 
@@ -23,23 +28,30 @@ public class QuoteService {
 
     @Transactional
     public List<Quote> getAllQuotes() {
+        log.info("QuoteService | Receiving all quotes");
         return quoteRepo.findAll();
     }
 
     @Transactional
-    public void save(String ticker, BigDecimal open, BigDecimal high, BigDecimal low, BigDecimal close, BigDecimal amount, BigDecimal volume, LocalDateTime time) {
-        log.debug("Quote Service | Saving quote, ticker: {}, close price: {}, time: {}", ticker, close, time);
-        Quote quote = Quote.builder()
-                .ticker(ticker)
-                .openPrice(open)
-                .highPrice(high)
-                .lowPrice(low)
-                .closePrice(close)
-                .amount(amount)
-                .volume(volume)
-                .datetime(time)
+    public Quote save(Quote quote) {
+        log.debug("QuoteService | Quote successfully saved, quote: {}", quote);
+        return quoteRepo.save(quote);
+    }
+
+    @Transactional
+    public Quote addNewQuote(TickerPrice tickerPrice, List<Candlestick> candlesticks) {
+        log.debug("QuoteService | Adding new quote with ticker: {}", tickerPrice);
+        var candlestick = candlesticks.getLast();
+        var quote = Quote.builder()
+                .ticker(tickerPrice.getSymbol())
+                .openPrice(new BigDecimal(candlestick.getOpen()))
+                .highPrice(new BigDecimal(candlestick.getHigh()))
+                .lowPrice(new BigDecimal(candlestick.getLow()))
+                .closePrice(new BigDecimal(candlestick.getClose()))
+                .volume(new BigDecimal(candlestick.getVolume()))
+                .amount(new BigDecimal(candlestick.getQuoteAssetVolume()))
+                .datetime(LocalDateTime.now())
                 .build();
-        quoteRepo.save(quote);
-        log.debug("Quote Service | Quote successfully saved: {}", quote);
+        return save(quote);
     }
 }

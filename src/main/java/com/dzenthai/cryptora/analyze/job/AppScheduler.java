@@ -41,7 +41,7 @@ public class AppScheduler {
     @Scheduled(fixedRate = 10000)
     public void executeInSequence() {
         fetchNewQuotesAsync()
-                .thenCompose(analyze -> analyzeAndGenerateSignalsAsync())
+                .thenCompose(_ -> analyzeAndGenerateSignalsAsync())
                 .exceptionally(ex -> {
                     log.error("Application Scheduler | Error executing operations: {}", ex.getMessage(), ex);
 

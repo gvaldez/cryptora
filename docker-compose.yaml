@@ -1,6 +1,7 @@
 services:
   mongo_db:
     image: mongo:5.0.2
+    container_name: mongodb
     restart: unless-stopped
     env_file: ./.env
     environment:
@@ -12,8 +13,10 @@ services:
       - db:/data/db
 
   app:
+    container_name: cryptora
     depends_on:
       - mongo_db
+      - rabbitmq
     build: .
     restart: unless-stopped
     env_file: ./.env
@@ -21,12 +24,26 @@ services:
       - "8088:8088"
     environment:
       SPRING_APPLICATION_JSON: '{
-          "spring.data.mongodb.uri" : "mongodb://root:123456@mongo_db:27017/binance?authSource=admin"
+          "spring.data.mongodb.uri" : "mongodb://root:123456@mongo_db:27017/binance?authSource=admin",
+          "spring.rabbitmq.host" : "rabbitmq",
+          "spring.rabbitmq.port" : 5672,
+          "spring.rabbitmq.username" : "guest",
+          "spring.rabbitmq.password" : "guest"
         }'
     volumes:
       - ~/.gradle:/home/gradle/.gradle
     stdin_open: true
     tty: true
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
 volumes:
   db:
+  rabbitmq_data:

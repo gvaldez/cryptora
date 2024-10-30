@@ -1,7 +1,6 @@
-package com.dzenthai.cryptora.analyze.config;
+package com.dzenthai.cryptora.analyze.configuration;
 
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
