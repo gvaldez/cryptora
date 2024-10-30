@@ -5,7 +5,6 @@ import com.dzenthai.cryptora.analyze.facade.MessageSender;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.BaseBar;
 import org.ta4j.core.BaseBarSeries;
@@ -14,6 +13,7 @@ import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.num.DecimalNum;
 import org.ta4j.core.num.Num;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -32,10 +32,6 @@ public class AnalyticService {
 
     private final MessageSender messageSender;
 
-    private final int shortTimePeriod = 30;
-
-    private final int longTimePeriod = 100;
-
     public AnalyticService(
             QuoteService quoteService,
             MessageSender messageSender
@@ -46,6 +42,10 @@ public class AnalyticService {
 
     @Transactional
     public void analyzeAndGenerateSignals() {
+
+        int shortTimePeriod = 50;
+
+        int longTimePeriod = 200;
 
         log.info("AnalyticService | Datetime: {}", LocalDateTime.now());
 
@@ -81,10 +81,12 @@ public class AnalyticService {
             Num shortTermValue = shortTermSMA.getValue(series.getEndIndex());
             Num longTermValue = longTermSMA.getValue(series.getEndIndex());
 
-            if (shortTermValue.isGreaterThan(longTermValue) && latestPrice.isGreaterThan(shortTermValue)) {
+            if (shortTermValue.isGreaterThan(longTermValue.multipliedBy(DecimalNum.valueOf(BigDecimal.valueOf(1.01))))
+                    && latestPrice.isGreaterThan(shortTermValue)) {
                 log.info("AnalyticService | {}: BUY", shortCut);
                 messageSender.send("Buy %s".formatted(shortCut));
-            } else if (shortTermValue.isLessThan(longTermValue) && latestPrice.isLessThan(shortTermValue)) {
+            } else if (shortTermValue.isLessThan(longTermValue.multipliedBy(DecimalNum.valueOf(BigDecimal.valueOf(1.01))))
+                    && latestPrice.isLessThan(shortTermValue)) {
                 log.info("AnalyticService | {}: SELL", shortCut);
                 messageSender.send("Sell %s".formatted(shortCut));
             } else {
@@ -97,7 +99,7 @@ public class AnalyticService {
     private BarSeries buildBarSeries(List<Quote> quotes) {
         var series = new BaseBarSeries();
 
-        series.setMaximumBarCount(Math.max(longTimePeriod, shortTimePeriod));
+        series.setMaximumBarCount(1000);
 
         ZonedDateTime lastBarEndTime = null;
 
@@ -117,7 +119,7 @@ public class AnalyticService {
             }
 
             var bar = new BaseBar(
-                    Duration.ofMinutes(15),
+                    Duration.ofHours(1),
                     endTime,
                     DecimalNum.valueOf(quote.getOpenPrice()),
                     DecimalNum.valueOf(quote.getHighPrice()),

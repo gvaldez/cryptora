@@ -45,19 +45,24 @@ public class AppScheduler {
                 .exceptionally(ex -> {
                     log.error("Application Scheduler | Error executing operations: {}", ex.getMessage(), ex);
 
-                    retryFetchNewQuotes();
+                    retryFetchNewQuotes(1);
 
                     throw new BinanceApiException("Application Scheduler | Critical error executing tasks", ex);
                 });
     }
 
-    private void retryFetchNewQuotes() {
+    private void retryFetchNewQuotes(int retryCount) {
         try {
-            Thread.sleep(5000);
+            int delay = (int) Math.pow(2, retryCount) * 1000;
+            Thread.sleep(delay);
             fetchService.fetchNewQuotes();
-        } catch (InterruptedException e) {
-            log.error("Application Scheduler | Error during retry to fetch new quotes: {}", e.getMessage(), e);
-            Thread.currentThread().interrupt();
+        } catch (Exception e) {
+            log.error("AppScheduler | Error during retry attempt {}, exception: ", retryCount, e);
+            if (retryCount < 5) {
+                retryFetchNewQuotes(retryCount + 1);
+            } else {
+                log.error("AppScheduler | Max retry attempts reached. Aborting.");
+            }
         }
     }
 }
