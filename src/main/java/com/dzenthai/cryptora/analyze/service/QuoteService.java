@@ -23,9 +23,9 @@ public class QuoteService {
         this.quoteRepo = quoteRepo;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Quote> getAllQuotes() {
-        log.info("QuoteService | Receiving all quotes");
+        log.debug("QuoteService | Receiving all quotes");
         return quoteRepo.findAll();
     }
 
@@ -37,6 +37,10 @@ public class QuoteService {
 
     @Transactional
     public Quote addNewQuote(TickerPrice tickerPrice, List<Candlestick> candlesticks) {
+        if (candlesticks.isEmpty()) {
+            log.warn("QuoteService | Candlesticks list is empty for ticker: {}", tickerPrice.getSymbol());
+            return null;
+        }
         log.debug("QuoteService | Adding new quote with ticker: {}", tickerPrice);
         var candlestick = candlesticks.getLast();
         var quote = Quote.builder()
