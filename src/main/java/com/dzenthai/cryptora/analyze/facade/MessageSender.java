@@ -10,7 +10,7 @@ public class MessageSender {
 
     private final AmqpTemplate amqpTemplate;
 
-    @Value("${queue.name}")
+    @Value("${spring.rabbitmq.queue.name}")
     private String queueName;
 
     public MessageSender(AmqpTemplate amqpTemplate) {

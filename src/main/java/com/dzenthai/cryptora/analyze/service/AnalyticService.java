@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
 @Slf4j
 @Service
 public class AnalyticService {
@@ -35,7 +36,7 @@ public class AnalyticService {
     public AnalyticService(QuoteService quoteService, MessageSender messageSender) {
         this.quoteService = quoteService;
         this.messageSender = messageSender;
-        this.shortTimePeriod = 100;
+        this.shortTimePeriod = 50;
         this.longTimePeriod = 200;
     }
 
