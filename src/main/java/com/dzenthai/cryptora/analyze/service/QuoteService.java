@@ -38,18 +38,35 @@ public class QuoteService {
 
     @Transactional
     public Quote addNewQuote(TickerPrice tickerPrice, List<Candlestick> candlesticks) {
-        var candlestick = candlesticks.getLast();
-        var quote = Quote.builder()
-                .ticker(tickerPrice.getSymbol())
-                .openPrice(new BigDecimal(candlestick.getOpen()))
-                .highPrice(new BigDecimal(candlestick.getHigh()))
-                .lowPrice(new BigDecimal(candlestick.getLow()))
-                .closePrice(new BigDecimal(candlestick.getClose()))
-                .volume(new BigDecimal(candlestick.getVolume()))
-                .amount(new BigDecimal(candlestick.getQuoteAssetVolume()))
-                .datetime(LocalDateTime.now().atZone(ZoneOffset.UTC).toLocalDateTime())
-                .build();
+
+        var candlestick = getLastCandlestick(candlesticks);
+        var datetime = getCurrentUtcDateTime();
+        var quote = buildQuote(tickerPrice, candlestick, datetime);
+
         log.debug("QuoteService | Adding new quote with ticker: {}, quote: {}", tickerPrice, quote);
         return save(quote);
     }
+
+    private Candlestick getLastCandlestick(List<Candlestick> candlesticks) {
+        return candlesticks.getLast();
+    }
+
+    private LocalDateTime getCurrentUtcDateTime() {
+        return LocalDateTime.now(ZoneOffset.UTC);
+    }
+
+    private Quote buildQuote(TickerPrice tickerPrice, Candlestick candlestick, LocalDateTime datetime) {
+        log.debug("QuoteService | Building new quote, ticker: {}, candlestick: {}, datetime: {}", tickerPrice, candlestick, datetime);
+        return Quote.builder()
+                .ticker(tickerPrice.getSymbol())
+                .openPrice(BigDecimal.valueOf(Double.parseDouble(candlestick.getOpen())))
+                .highPrice(BigDecimal.valueOf(Double.parseDouble(candlestick.getHigh())))
+                .lowPrice(BigDecimal.valueOf(Double.parseDouble(candlestick.getLow())))
+                .closePrice(BigDecimal.valueOf(Double.parseDouble(candlestick.getClose())))
+                .volume(BigDecimal.valueOf(Double.parseDouble(candlestick.getVolume())))
+                .amount(BigDecimal.valueOf(Double.parseDouble(candlestick.getQuoteAssetVolume())))
+                .datetime(datetime)
+                .build();
+    }
+
 }

@@ -1,12 +1,10 @@
 ![Java Version](https://img.shields.io/badge/Java-v23-red)
 ![Repository Size](https://img.shields.io/github/repo-size/dzenthai/Cryptora-Analyze-Service?color=red)
 
-<div style="display: flex; flex-wrap: wrap; justify-content: center;">
-    <img src="./assets/Binance-logo.png" width="65" height="65" style="margin: 10px;" alt="">
-    <img src="./assets/Intellij-logo.png" width="65" height="65" style="margin: 10px;" alt="">
+<div style="text-align: center;">
+    <img src="./assets/Binance-logo.png" style="width: 65px; height: 65px;" alt="">
+    <img src="./assets/Intellij-logo.png" style="width: 65px; height: 65px;" alt="">
 </div>
-
-# Cryptora-Analyze-Service
 
 ## **Description**
 
@@ -62,8 +60,7 @@ Sell". The logs show the real-time analysis results for each cryptocurrency.
 
 In the example above:
 
-The analytic service starts the analysis and determines that for ETH, BTC, and TON, the recommended action is to hold (
-HOLD).
+The analytic service starts the analysis and determines that for ETH, BTC, and TON, the recommended action is to hold (HOLD).
 
 ### **RabbitMQ Message Queue**
 
@@ -75,9 +72,10 @@ services subscribed to the queue.
 
 The image above shows a queue with multiple messages:
 
-Message 1: Recommendation to Hold ETH.
-Message 2: Recommendation to Hold BTC.
-Message 3: Recommendation to Sell TON.
+* Message 1: Recommendation to Hold ETH.
+* Message 2: Recommendation to Hold BTC.
+* Message 3: Recommendation to Sell TON. 
+
 Each message contains additional attributes, such as priority, delivery_mode, and content_type, which allow the system
 to handle them flexibly and provide recommendations in real time.
 
