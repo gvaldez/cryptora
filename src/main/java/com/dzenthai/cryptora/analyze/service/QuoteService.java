@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 
@@ -37,11 +38,6 @@ public class QuoteService {
 
     @Transactional
     public Quote addNewQuote(TickerPrice tickerPrice, List<Candlestick> candlesticks) {
-        if (candlesticks.isEmpty()) {
-            log.warn("QuoteService | Candlesticks list is empty for ticker: {}", tickerPrice.getSymbol());
-            return null;
-        }
-        log.debug("QuoteService | Adding new quote with ticker: {}", tickerPrice);
         var candlestick = candlesticks.getLast();
         var quote = Quote.builder()
                 .ticker(tickerPrice.getSymbol())
@@ -51,8 +47,9 @@ public class QuoteService {
                 .closePrice(new BigDecimal(candlestick.getClose()))
                 .volume(new BigDecimal(candlestick.getVolume()))
                 .amount(new BigDecimal(candlestick.getQuoteAssetVolume()))
-                .datetime(LocalDateTime.now())
+                .datetime(LocalDateTime.now().atZone(ZoneOffset.UTC).toLocalDateTime())
                 .build();
+        log.debug("QuoteService | Adding new quote with ticker: {}, quote: {}", tickerPrice, quote);
         return save(quote);
     }
 }
