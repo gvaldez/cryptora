@@ -11,6 +11,7 @@ import org.ta4j.core.BarSeries;
 import org.ta4j.core.BaseBar;
 import org.ta4j.core.BaseBarSeries;
 import org.ta4j.core.indicators.SMAIndicator;
+import org.ta4j.core.indicators.ATRIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.num.DecimalNum;
 import org.ta4j.core.num.Num;
@@ -39,6 +40,12 @@ public class AnalyticService {
     @Value("${cryptora.long.time.period}")
     private Integer longTimePeriod;
 
+    @Value("${cryptora.atr.period}")
+    private Integer atrPeriod;
+
+    @Value("${cryptora.atr.multiplier}")
+    private Double atrMultiplier;
+
     public AnalyticService(
             QuoteService quoteService,
             MessageSender messageSender
@@ -51,7 +58,6 @@ public class AnalyticService {
     public void analyzeAndGenerateSignals() {
         log.info("AnalyticService | Analysis started at {}", LocalDateTime.now());
         var quotesByTicker = groupQuotesByTicker();
-
         quotesByTicker.forEach(this::analyzeTickerQuotes);
     }
 
@@ -81,15 +87,24 @@ public class AnalyticService {
         Num shortTermValue = shortTermSMA.getValue(series.getEndIndex());
         Num longTermValue = longTermSMA.getValue(series.getEndIndex());
 
-        sendSignalMessage(latestPrice, shortTermValue, longTermValue, shortCut);
+        var thresholds = calculateThresholds(series, longTermValue);
+        sendSignalMessage(latestPrice, shortTermValue, thresholds[0], thresholds[1], shortCut);
     }
 
-    private void sendSignalMessage(Num latestPrice, Num shortTermValue, Num longTermValue, String shortCut) {
-        var threshold = longTermValue.multipliedBy(DecimalNum.valueOf(1.01));
+    private Num[] calculateThresholds(BarSeries series, Num longTermValue) {
+        ATRIndicator atrIndicator = new ATRIndicator(series, atrPeriod);
+        Num atrValue = atrIndicator.getValue(series.getEndIndex());
 
-        if (shortTermValue.isGreaterThan(threshold) && latestPrice.isGreaterThan(shortTermValue)) {
+        Num thresholdUpper = longTermValue.plus(atrValue.multipliedBy(DecimalNum.valueOf(atrMultiplier)));
+        Num thresholdLower = longTermValue.minus(atrValue.multipliedBy(DecimalNum.valueOf(atrMultiplier)));
+
+        return new Num[]{thresholdUpper, thresholdLower};
+    }
+
+    private void sendSignalMessage(Num latestPrice, Num shortTermValue, Num thresholdUpper, Num thresholdLower, String shortCut) {
+        if (shortTermValue.isGreaterThan(thresholdUpper) && latestPrice.isGreaterThan(shortTermValue)) {
             sendMessage("Buy", shortCut);
-        } else if (shortTermValue.isLessThan(threshold) && latestPrice.isLessThan(shortTermValue)) {
+        } else if (shortTermValue.isLessThan(thresholdLower) && latestPrice.isLessThan(shortTermValue)) {
             sendMessage("Sell", shortCut);
         } else {
             sendMessage("Hold", shortCut);

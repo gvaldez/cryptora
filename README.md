@@ -1,16 +1,17 @@
 ![Java Version](https://img.shields.io/badge/Java-v23-red)
 ![Repository Size](https://img.shields.io/github/repo-size/dzenthai/Cryptora-Analyze-Service?color=red)
 
-<div style="text-align: center;">
-    <img src="./assets/Binance-logo.png" style="width: 65px; height: 65px;" alt="">
-    <img src="./assets/Intellij-logo.png" style="width: 65px; height: 65px;" alt="">
-</div>
+<img src="./assets/Binance-logo.png" style="width: 65px; height: 65px;" alt="">
+<img src="./assets/Intellij-logo.png" style="width: 65px; height: 65px;" alt="">
 
 ## **Description**
 
-**Cryptora-Analyze-Service** is a Spring Boot application that performs real-time cryptocurrency market analysis using
-the Binance API and RabbitMQ. The service tracks price movements, analyzes short- and long-term trends, and generates
-trading signals (buy, sell, hold), which are sent through RabbitMQ.
+**cryptora-analyze-service**  is a Spring Boot application that retrieves cryptocurrency data from the Binance API and
+analyzes it based on price fluctuations.
+The service tracks price movements of various cryptocurrencies and assesses both short-term and long-term trends,
+utilizing the Average True Range (ATR) with configurable periods and multipliers to enhance its insights.
+A key advantage of this application is its ability to transmit data to other services or bots, such as Telegram,
+using RabbitMQ, facilitating seamless integration and communication for generating trading signals (buy, sell, hold).
 
 ---
 
@@ -53,14 +54,15 @@ trading signals (buy, sell, hold), which are sent through RabbitMQ.
 
 ### **Cryptocurrency Analysis**
 
-The application, deployed in Docker, performs cryptocurrency analysis and provides recommendations, such as "Hold" or "
-Sell". The logs show the real-time analysis results for each cryptocurrency.
+The application, deployed in Docker, performs cryptocurrency analysis and provides recommendations,
+such as "Buy", "Sell" or "Hold". The logs show the real-time analysis results for each cryptocurrency.
 
 <img src="./assets/Docker-example.png" alt="">
 
 In the example above:
 
-The analytic service starts the analysis and determines that for ETH, BTC, and TON, the recommended action is to hold (HOLD).
+The analytic service starts the analysis and determines that for ETH, BTC, and TON,
+the recommended actions is to sell BTC and hold ETC and TON.
 
 ### **RabbitMQ Message Queue**
 
@@ -74,7 +76,7 @@ The image above shows a queue with multiple messages:
 
 * Message 1: Recommendation to Hold ETH.
 * Message 2: Recommendation to Hold BTC.
-* Message 3: Recommendation to Sell TON. 
+* Message 3: Recommendation to Sell TON.
 
 Each message contains additional attributes, such as priority, delivery_mode, and content_type, which allow the system
 to handle them flexibly and provide recommendations in real time.
@@ -114,16 +116,16 @@ to handle them flexibly and provide recommendations in real time.
 
 ## **Additional Information**
 
-### **Changing Cryptocurrency Pairs**
+### **Adding or Changing Cryptocurrency**
 
-To add new cryptocurrency pairs, update the `Ticker` class by adding them to the Ticker enum:
+To add new cryptocurrency, update the `Ticker` class by adding them to the Ticker enum:
 
 ```java
 enum Ticker {
     BTC,
     ETH,
     TON,
-    // add a new pair here
+    // add a new cryptocurrency here
 }
 ```
 
@@ -146,17 +148,22 @@ application.yaml file:
 cryptora:
   short:
     time:
-      period: 50
+      period: 50 #short-term
   long:
     time:
-      period: 200
+      period: 200 #long-term
+  atr:
+    period: 14 # atr period
+    multiplier: 2.0 # atr multiplier
 ```
 
 Also, it is recommended to adjust the duration in the `AnalyticService` class to match, as shown below:
 
 ```java
-var bar = new BaseBar(
-        Duration.ofHours(1)
-        // Other settings...
-);
+private Bar buildBar(ZonedDateTime endTime, Quote quote) {
+    return new BaseBar(
+            Duration.ofHours(1) // Also supports setting in seconds, minutes, days, etc.
+            // Other settings...
+    );
+}
 ```

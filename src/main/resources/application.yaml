@@ -5,3 +5,11 @@ cryptora:
   long:
     time:
       period: 200
+  atr:
+    period: 14
+    multiplier: 2.0
+
+binance:
+  api:
+    key: ${API_KEY}
+    secret: ${API_SECRET}

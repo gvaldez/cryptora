@@ -68,5 +68,4 @@ public class QuoteService {
                 .datetime(datetime)
                 .build();
     }
-
 }
