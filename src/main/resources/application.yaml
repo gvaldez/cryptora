@@ -1,0 +1,7 @@
+cryptora:
+  short:
+    time:
+      period: 50
+  long:
+    time:
+      period: 200

@@ -37,7 +37,7 @@ public class AnalyticService {
     private Integer shortTimePeriod;
 
     @Value("${cryptora.long.time.period}")
-    private int longTimePeriod;
+    private Integer longTimePeriod;
 
     public AnalyticService(
             QuoteService quoteService,
