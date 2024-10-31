@@ -1,12 +1,14 @@
 ![Java Version](https://img.shields.io/badge/Java-v23-red)
 ![Repository Size](https://img.shields.io/github/repo-size/dzenthai/Cryptora-Analyze-Service?color=red)
 
-<img src="./assets/Binance-logo.png" style="width: 65px; height: 65px;" alt="">
-<img src="./assets/Intellij-logo.png" style="width: 65px; height: 65px;" alt="">
+<div style="display: flex; flex-wrap: wrap; justify-content: center;">
+    <img src="./assets/Binance-logo.png" style="width: 65px; height: 65px;" alt="">
+    <img src="./assets/Intellij-logo.png" style="width: 65px; height: 65px;" alt="">
+</div>
 
 ## **Description**
 
-**cryptora-analyze-service**  is a Spring Boot application that retrieves cryptocurrency data from the Binance API and
+**Cryptora-Analyze-Service**  is a Spring Boot application that retrieves cryptocurrency data from the Binance API and
 analyzes it based on price fluctuations.
 The service tracks price movements of various cryptocurrencies and assesses both short-term and long-term trends,
 utilizing the Average True Range (ATR) with configurable periods and multipliers to enhance its insights.
