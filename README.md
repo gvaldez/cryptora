@@ -54,6 +54,23 @@ using RabbitMQ, facilitating seamless integration and communication for generati
 
 ## **How it Works**
 
+### **Storing cryptocurrency data in a MongoDB**
+
+After successfully retrieving data from the Binance API, all cryptocurrency information is stored in the database.
+
+<img src="./assets/Mongo-example.jpg" alt="">
+
+In the example above:
+
+* Amount: The quantity of cryptocurrency involved in the transaction or trading period.
+* Close price: The price at which the last trade was executed during the specified period.
+* Date time: The timestamp in UTC format representing when the data was recorded.
+* High price: The highest price reached during the specified time period.
+* Low price: The lowest price reached during the specified time period.
+* Open price: The price at which the first trade occurred during the specified period.
+* Ticker: The symbol representing the cryptocurrency pair being traded.
+* Volume: The total amount of cryptocurrency traded during the specified period.
+
 ### **Cryptocurrency Analysis**
 
 The application, deployed in Docker, performs cryptocurrency analysis and provides recommendations,

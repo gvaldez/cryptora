@@ -2,6 +2,9 @@ FROM gradle:8.10.2-jdk23 AS builder
 WORKDIR /opt/app
 COPY build.gradle settings.gradle ./
 COPY src ./src
+USER root
+RUN chown -R gradle /opt/app
+USER gradle
 RUN gradle build --no-daemon -x test
 
 FROM openjdk:23

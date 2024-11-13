@@ -1,4 +1,4 @@
-package com.dzenthai.cryptora.analyze.facade;
+package com.dzenthai.cryptora.analyze.message;
 
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -6,14 +6,14 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-public class MessageSender {
+public class AmqpMessageSender {
 
     private final AmqpTemplate amqpTemplate;
 
     @Value("${spring.rabbitmq.queue.name}")
     private String queueName;
 
-    public MessageSender(AmqpTemplate amqpTemplate) {
+    public AmqpMessageSender(AmqpTemplate amqpTemplate) {
         this.amqpTemplate = amqpTemplate;
     }
 
