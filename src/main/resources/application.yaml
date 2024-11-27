@@ -1,3 +1,28 @@
+spring:
+  application:
+    name: cryptora-analyze-service
+
+  data:
+    mongodb:
+      username: root
+      password: 123456
+      database: binance
+      port: 27017
+      host: mongodb
+
+  rabbitmq:
+    username: guest
+    password: guest
+    host: rabbitmq
+    port: 5672
+    queue:
+      name: CryptoraQueue
+
+binance:
+  api:
+    key: ${API_KEY}
+    secret: ${API_SECRET}
+
 cryptora:
   short:
     time:
@@ -9,7 +34,5 @@ cryptora:
     period: 14
     multiplier: 2.0
 
-binance:
-  api:
-    key: ${API_KEY}
-    secret: ${API_SECRET}
+server:
+  port: 8088

@@ -39,24 +39,15 @@ public class QuoteService {
     @Transactional
     public Quote addNewQuote(TickerPrice tickerPrice, List<Candlestick> candlesticks) {
 
-        var candlestick = getLastCandlestick(candlesticks);
-        var datetime = getCurrentUtcDateTime();
-        var quote = buildQuote(tickerPrice, candlestick, datetime);
+        var candlestick = candlesticks.getLast();
+        var quote = buildQuote(tickerPrice, candlestick);
 
-        log.debug("QuoteService | Adding new quote with ticker: {}, quote: {}", tickerPrice, quote);
+        log.debug("QuoteService | Adding new quote with ticker: {}, quote: {}, datetime: {}", tickerPrice, quote, quote.getDatetime());
         return save(quote);
     }
 
-    private Candlestick getLastCandlestick(List<Candlestick> candlesticks) {
-        return candlesticks.getLast();
-    }
-
-    private LocalDateTime getCurrentUtcDateTime() {
-        return LocalDateTime.now(ZoneOffset.UTC);
-    }
-
-    private Quote buildQuote(TickerPrice tickerPrice, Candlestick candlestick, LocalDateTime datetime) {
-        log.debug("QuoteService | Building new quote, ticker: {}, candlestick: {}, datetime: {}", tickerPrice, candlestick, datetime);
+    private Quote buildQuote(TickerPrice tickerPrice, Candlestick candlestick) {
+        log.debug("QuoteService | Building new quote, ticker: {}, candlestick: {}", tickerPrice, candlestick);
         return Quote.builder()
                 .ticker(tickerPrice.getSymbol())
                 .openPrice(BigDecimal.valueOf(Double.parseDouble(candlestick.getOpen())))
@@ -65,7 +56,7 @@ public class QuoteService {
                 .closePrice(BigDecimal.valueOf(Double.parseDouble(candlestick.getClose())))
                 .volume(BigDecimal.valueOf(Double.parseDouble(candlestick.getVolume())))
                 .amount(BigDecimal.valueOf(Double.parseDouble(candlestick.getQuoteAssetVolume())))
-                .datetime(datetime)
+                .datetime(LocalDateTime.now(ZoneOffset.UTC))
                 .build();
     }
 }
