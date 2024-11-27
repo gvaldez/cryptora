@@ -9,11 +9,11 @@
 ## **Disclaimer**
 
 **This service does not guarantee a 100% increase or decrease in cryptocurrency values.**
-The service was developed solely for educational purposes and should not be considered as financial advice.
-The creators and developers of this service are not responsible for any financial losses or damages incurred
-while using it. Cryptocurrencies are highly volatile and carry inherent risks.
-Users should conduct their own research and consult with a qualified financial advisor before
-making any investment decisions. By using this service, you acknowledge and accept these risks.
+The service was developed solely by the author for educational purposes and should not be considered as financial
+advice. The creator of this service is not responsible for any financial losses or damages incurred while using it.
+Cryptocurrencies are highly volatile and carry inherent risks. Users should conduct their own research and consult with
+a qualified financial advisor before making any investment decisions. By using this service, you acknowledge and accept
+these risks.
 
 ---
 
