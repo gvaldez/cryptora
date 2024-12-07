@@ -5,13 +5,12 @@ import com.dzenthai.cryptora.analyze.message.AmqpMessageSender;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.ta4j.core.Bar;
 import org.ta4j.core.BarSeries;
 import org.ta4j.core.BaseBar;
 import org.ta4j.core.BaseBarSeries;
-import org.ta4j.core.indicators.SMAIndicator;
 import org.ta4j.core.indicators.ATRIndicator;
+import org.ta4j.core.indicators.SMAIndicator;
 import org.ta4j.core.indicators.helpers.ClosePriceIndicator;
 import org.ta4j.core.num.DecimalNum;
 import org.ta4j.core.num.Num;
@@ -54,7 +53,6 @@ public class AnalyticService {
         this.amqpMessageSender = amqpMessageSender;
     }
 
-    @Transactional
     public void analyzeAndGenerateSignals() {
         log.info("AnalyticService | Analysis started at {}", LocalDateTime.now());
         var quotesByTicker = groupQuotesByTicker();
@@ -75,7 +73,6 @@ public class AnalyticService {
             log.warn("AnalyticService | {}: Insufficient data for SMA calculation. Skipping...", shortCut);
             return;
         }
-
         evaluateSignals(series, shortCut);
     }
 

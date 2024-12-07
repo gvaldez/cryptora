@@ -4,18 +4,8 @@
 <div style="display: flex; flex-wrap: wrap; justify-content: center;">
     <img src="./assets/Binance-logo.png" style="width: 65px; height: 65px;" alt="">
     <img src="./assets/Intellij-logo.png" style="width: 65px; height: 65px;" alt="">
+    <img src="./assets/Ollama-logo.png" style="width: 65px; height: 65px;" alt="">
 </div>
-
-## **Disclaimer**
-
-**This service does not guarantee a 100% increase or decrease in cryptocurrency values.**
-The service was developed solely by the author for educational purposes and should not be considered as financial
-advice. The creator of this service is not responsible for any financial losses or damages incurred while using it.
-Cryptocurrencies are highly volatile and carry inherent risks. Users should conduct their own research and consult with
-a qualified financial advisor before making any investment decisions. By using this service, you acknowledge and accept
-these risks.
-
----
 
 ## **Description**
 
@@ -25,6 +15,17 @@ The service tracks price movements of various cryptocurrencies and assesses both
 utilizing the Average True Range (ATR) with configurable periods and multipliers to enhance its insights.
 A key advantage of this application is its ability to transmit data to other services or bots, such as Telegram,
 using RabbitMQ, facilitating seamless integration and communication for generating trading signals (buy, sell, hold).
+
+---
+
+## **Disclaimer**
+
+**This service does not guarantee a 100% increase or decrease in cryptocurrency values.**
+The service was developed solely by the author for educational purposes and should not be considered as financial
+advice. The creator of this service is not responsible for any financial losses or damages incurred while using it.
+Cryptocurrencies are highly volatile and carry inherent risks. Users should conduct their own research and consult with
+a qualified financial advisor before making any investment decisions. By using this service, you acknowledge and accept
+these risks.
 
 ---
 
@@ -42,6 +43,9 @@ using RabbitMQ, facilitating seamless integration and communication for generati
 - **Trading Signal Generation and Delivery**: Generated signals are sent via a RabbitMQ message queue, making it easy to
   connect and deliver this data to other services or end users.
 
+- **AI**: Generation of recommendations based on cryptocurrency data analysis,
+  creating trading advice, price forecasting, and trend identification.
+
 ---
 
 ## **Technologies**
@@ -58,12 +62,34 @@ using RabbitMQ, facilitating seamless integration and communication for generati
 
 - **RabbitMQ**: Message queue for asynchronous delivery of trading signals, enabling integration with other systems.
 
+- **Ollama**: A tool for local data analysis and task automation.
+
 - **Docker**: Containerization platform that helps package the application with its dependencies, ensuring consistent
   environments and simplifying deployment.
 
 ---
 
 ## **How it Works**
+
+### **Cryptocurrency Analysis**
+
+The application, deployed in Docker, performs cryptocurrency analysis and provides recommendations,
+such as "Buy", "Sell" or "Hold". The logs show the real-time analysis results for each cryptocurrency.
+
+<img src="./assets/Docker-example.png" alt="">
+
+In the example above:
+
+The analytic service starts the analysis and determines that for ETH, BTC, and TON,
+the recommended actions is to sell BTC and hold ETC and TON.
+
+### **Generation of recommendations**
+
+By visiting ```http://localhost:8088/api/analyze/TON```, we can see an analysis of the current price of the TON
+cryptocurrency, including its average, minimum, and maximum price, as well as recommendations based on market stability
+and volatility.
+
+<img src="./assets/Ollama-example.png" alt="">
 
 ### **Storing cryptocurrency data in a MongoDB**
 
@@ -81,18 +107,6 @@ In the example above:
 * Open price: The price at which the first trade occurred during the specified period.
 * Ticker: The symbol representing the cryptocurrency pair being traded.
 * Volume: The total amount of cryptocurrency traded during the specified period.
-
-### **Cryptocurrency Analysis**
-
-The application, deployed in Docker, performs cryptocurrency analysis and provides recommendations,
-such as "Buy", "Sell" or "Hold". The logs show the real-time analysis results for each cryptocurrency.
-
-<img src="./assets/Docker-example.png" alt="">
-
-In the example above:
-
-The analytic service starts the analysis and determines that for ETH, BTC, and TON,
-the recommended actions is to sell BTC and hold ETC and TON.
 
 ### **RabbitMQ Message Queue**
 
@@ -120,6 +134,7 @@ to handle them flexibly and provide recommendations in real time.
 - Java 23
 - Gradle 8.10.2
 - Docker 27.2.0
+- Binance Account
 
 ### **Installation and Startup Steps**
 
@@ -130,6 +145,11 @@ to handle them flexibly and provide recommendations in real time.
    ```
 
 2. **Add Environment Variables**
+   Before setting environment variables, make sure your Binance account is verified,
+   as this is required to obtain the API_KEY and API_SECRET.
+
+   You can obtain the API key and secret by following this [link](https://www.binance.com/my/settings/api-management).
+
    Create an .env file and add the required environment variables such as the Binance API key and secret.
 
 3. **Build the Project Using Gradle**
@@ -141,6 +161,12 @@ to handle them flexibly and provide recommendations in real time.
    ```bash
    docker-compose up --build
    ```
+   
+5. **Installation of Ollama with the Llama3.2:1b model.** (optional)
+    ```bash
+   docker exec -it ollama ollama run llama3.2:1b
+   ```
+   Or use the ollama.sh file in the root folder of the project.
 
 ---
 

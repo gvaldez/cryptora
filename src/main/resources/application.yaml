@@ -18,6 +18,12 @@ spring:
     queue:
       name: CryptoraQueue
 
+  ai:
+    ollama:
+      base-url: http://ollama:11434
+      chat:
+        model: llama3.2:1b
+
 binance:
   api:
     key: ${API_KEY}
