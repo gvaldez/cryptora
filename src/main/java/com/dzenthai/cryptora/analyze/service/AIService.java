@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Comparator;
 import java.util.List;
 
 
@@ -31,12 +30,15 @@ public class AIService {
     }
 
     public String getAnalysis(String ticker) {
-        return String.format(generateResponse(ticker));
+        log.debug("AIService | Getting analysis for the ticker: {}", ticker);
+        return buildResult(ticker) + generateAIResponse(ticker);
     }
 
-    public String generateResponse(String ticker) {
+    public String generateAIResponse(String ticker) {
+        var prompt = buildPrompt(ticker);
+        log.debug("AIService | Generating AI response for the ticker: {}, prompt: {}", ticker, prompt);
         return chatModel.call(
-                        new Prompt(buildPrompt(ticker),
+                        new Prompt(prompt,
                                 new OllamaOptions()
                                         .withModel(OllamaModel.LLAMA3_2_1B)
                                         .withTemperature(0.4)))
@@ -45,59 +47,104 @@ public class AIService {
                 .getContent();
     }
 
-    private List<Quote> getQuotesByTicker(String ticker) {
-        return quoteService.getAllQuotes()
-                .stream()
-                .sorted(Comparator.comparing(Quote::getDatetime).reversed())
-                .filter(quote -> quote.getTicker().equals(ticker.concat("USDT")))
-                .toList();
+    private BigDecimal calculateAverageOpenPrice(List<Quote> quotes) {
+        BigDecimal totalOpenPrice = BigDecimal.ZERO;
+        for (Quote quote : quotes) {
+            totalOpenPrice = totalOpenPrice.add(quote.getOpenPrice());
+        }
+        log.debug("AIService | Calculating average open price: {}", totalOpenPrice);
+        return totalOpenPrice.divide(BigDecimal.valueOf(quotes.size()), RoundingMode.HALF_UP);
     }
 
-    private BigDecimal calculateAveragePrice(List<Quote> quotes) {
-        BigDecimal sum = quotes.stream()
-                .map(Quote::getClosePrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        return sum.divide(BigDecimal.valueOf(quotes.size()), RoundingMode.HALF_UP);
+    private BigDecimal calculateAverageClosePrice(List<Quote> quotes) {
+        BigDecimal totalClosePrice = BigDecimal.ZERO;
+        for (Quote quote : quotes) {
+            totalClosePrice = totalClosePrice.add(quote.getClosePrice());
+        }
+        log.debug("AIService | Calculating average close price: {}", totalClosePrice);
+        return totalClosePrice.divide(BigDecimal.valueOf(quotes.size()), RoundingMode.HALF_UP);
     }
 
-    private BigDecimal calculateMinPrice(List<Quote> quotes) {
-        return quotes.stream()
-                .map(Quote::getLowPrice)
-                .min(Comparator.naturalOrder())
-                .orElse(BigDecimal.ZERO);
+    private BigDecimal calculateAverageHighPrice(List<Quote> quotes) {
+        BigDecimal totalHighPrice = BigDecimal.ZERO;
+        for (Quote quote : quotes) {
+            totalHighPrice = totalHighPrice.add(quote.getHighPrice());
+        }
+        log.debug("AIService | Calculating average high price {}", totalHighPrice);
+        return totalHighPrice.divide(BigDecimal.valueOf(quotes.size()), RoundingMode.HALF_UP);
     }
 
-    private BigDecimal calculateMaxPrice(List<Quote> quotes) {
-        return quotes.stream()
-                .map(Quote::getHighPrice)
-                .max(Comparator.naturalOrder())
-                .orElse(BigDecimal.ZERO);
+    private BigDecimal calculateAverageLowPrice(List<Quote> quotes) {
+        BigDecimal totalLowPrice = BigDecimal.ZERO;
+        for (Quote quote : quotes) {
+            totalLowPrice = totalLowPrice.add(quote.getLowPrice());
+        }
+        log.debug("AIService | Calculating average low price: {}", totalLowPrice);
+        return totalLowPrice.divide(BigDecimal.valueOf(quotes.size()), RoundingMode.HALF_UP);
     }
 
-    public String buildResult(String ticker) {
-        List<Quote> quotes = getQuotesByTicker(ticker);
+    private BigDecimal calculateTotalVolume(List<Quote> quotes) {
+        BigDecimal totalVolume = BigDecimal.ZERO;
+        for (Quote quote : quotes) {
+            totalVolume = totalVolume.add(quote.getVolume());
+        }
+        log.debug("AIService | Calculating total volume: {}", totalVolume);
+        return totalVolume;
+    }
+
+    private BigDecimal calculateTotalAmount(List<Quote> quotes) {
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        for (Quote quote : quotes) {
+            totalAmount = totalAmount.add(quote.getAmount());
+        }
+        log.debug("AIService | Calculating total amount: {}", totalAmount);
+        return totalAmount;
+    }
+
+    private BigDecimal calculateAverageTradePrice(List<Quote> quotes) {
+        BigDecimal averageTradePrice =  calculateTotalAmount(quotes)
+                .divide(calculateTotalVolume(quotes), RoundingMode.HALF_UP);
+        log.debug("AIService | Calculating average trade price: {}", averageTradePrice);
+        return averageTradePrice;
+    }
+
+    private String buildResult(String ticker) {
+        List<Quote> quotes = quoteService.getQuotesByTicker(ticker);
+
+        log.debug("AIService | Building result for the ticker: {}", ticker);
 
         if (quotes.isEmpty()) {
-            log.warn("AIService | No data available for the ticker: {}", ticker);
+            String warn = String.format("The ticker with the name %s does not exist or information about it is unavailable.", ticker);
+            log.warn("AIService | {}", warn);
+            return warn;
         }
 
-        BigDecimal averagePrice = calculateAveragePrice(quotes);
-        BigDecimal minPrice = calculateMinPrice(quotes);
-        BigDecimal maxPrice = calculateMaxPrice(quotes);
-
         return String.format("""
-                Analyze cryptocurrency data for the period:
-                            1. Price Analytics:
-                               - Average price: %s
-                               - Minimum price: %s
-                               - Maximum price: %s
-                            2. Recommendations:
-                """, averagePrice, minPrice, maxPrice);
+                Analysis for: %s
+                
+                - Average Open Price: %s
+                - Average Close Price: %s
+                - Average High Price: %s
+                - Average Low Price: %s
+                - Total Volume: %s
+                - Total Amount: %s
+                - Average Trade Price: %s
+                
+                """,
+                ticker,
+                calculateAverageOpenPrice(quotes),
+                calculateAverageClosePrice(quotes),
+                calculateAverageHighPrice(quotes),
+                calculateAverageLowPrice(quotes),
+                calculateTotalVolume(quotes),
+                calculateTotalAmount(quotes),
+                calculateAverageTradePrice(quotes));
     }
 
     private String buildPrompt(String ticker) {
+        log.debug("AIService | Building prompt for the ticker: {}", ticker);
         return String.format(buildResult(ticker) + """
-                [Short response]
+                [Output the information below]
                 Analysis of why the action is recommended,
                 including factors like market conditions,
                 trends, and supporting data.

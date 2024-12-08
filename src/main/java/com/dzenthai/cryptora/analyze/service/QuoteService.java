@@ -30,6 +30,15 @@ public class QuoteService {
         return quoteRepo.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public List<Quote> getQuotesByTicker(String ticker) {
+        log.debug("QuoteService | Receiving all quotes by ticker: {}", ticker);
+        return quoteRepo.findAll()
+                .stream()
+                .filter(quote -> quote.getTicker().equals(ticker.concat("USDT")))
+                .toList();
+    }
+
     @Transactional
     public Quote save(Quote quote) {
         log.debug("QuoteService | Quote successfully saved, quote: {}", quote);

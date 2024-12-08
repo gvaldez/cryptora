@@ -3,7 +3,6 @@
 
 <div style="display: flex; flex-wrap: wrap; justify-content: center;">
     <img src="./assets/Binance-logo.png" style="width: 65px; height: 65px;" alt="">
-    <img src="./assets/Intellij-logo.png" style="width: 65px; height: 65px;" alt="">
     <img src="./assets/Ollama-logo.png" style="width: 65px; height: 65px;" alt="">
 </div>
 
@@ -63,6 +62,9 @@ these risks.
 - **RabbitMQ**: Message queue for asynchronous delivery of trading signals, enabling integration with other systems.
 
 - **Ollama**: A tool for local data analysis and task automation.
+
+- **Postman**: makes a request to the API and outputs the analysis results, including key metrics and recommendations
+  based on AI.
 
 - **Docker**: Containerization platform that helps package the application with its dependencies, ensuring consistent
   environments and simplifying deployment.
@@ -152,6 +154,7 @@ to handle them flexibly and provide recommendations in real time.
 
    Create an .env file and add the required environment variables such as the Binance API key and secret.
 
+
 3. **Build the Project Using Gradle**
    ```bash
    ./gradlew build
@@ -161,12 +164,14 @@ to handle them flexibly and provide recommendations in real time.
    ```bash
    docker-compose up --build
    ```
-   
-5. **Installation of Ollama with the Llama3.2:1b model.** (optional)
-    ```bash
+
+### **Optional**
+
+**Installation of Ollama with the Llama3.2:1b model.**
+```bash
    docker exec -it ollama ollama run llama3.2:1b
    ```
-   Or use the ollama.sh file in the root folder of the project.
+Or use the ollama.sh file in the root folder of the project.
 
 ---
 
