@@ -100,15 +100,15 @@ public class AnalyticService {
 
     private void sendSignalMessage(Num latestPrice, Num shortTermValue, Num thresholdUpper, Num thresholdLower, String shortCut) {
         if (shortTermValue.isGreaterThan(thresholdUpper) && latestPrice.isGreaterThan(shortTermValue)) {
-            sendMessage("Buy", shortCut);
+            sendSignals("Buy", shortCut);
         } else if (shortTermValue.isLessThan(thresholdLower) && latestPrice.isLessThan(shortTermValue)) {
-            sendMessage("Sell", shortCut);
+            sendSignals("Sell", shortCut);
         } else {
-            sendMessage("Hold", shortCut);
+            sendSignals("Hold", shortCut);
         }
     }
 
-    private void sendMessage(String action, String shortCut) {
+    private void sendSignals(String action, String shortCut) {
         log.info("AnalyticService | {}: {}", shortCut, action.toUpperCase());
         amqpMessageSender.send("%s %s".formatted(action, shortCut));
     }

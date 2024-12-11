@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/ai")
 public class AIController {
 
     private final AIService aiService;
@@ -17,8 +17,8 @@ public class AIController {
         this.aiService = aiService;
     }
 
-    @GetMapping("/analyze/{ticker}")
-    public String analyze(@PathVariable String ticker) {
-        return aiService.getAnalysis(ticker);
+    @GetMapping("/recommendation/{ticker}")
+    public String getAIRecommendation(@PathVariable String ticker) {
+        return aiService.getAIRecommendation(ticker);
     }
 }

@@ -55,16 +55,9 @@ these risks.
 
 - **MongoDB**: A NoSQL database used for storing real-time cryptocurrency quotes.
 
-- **Binance API**: External API for retrieving up-to-date cryptocurrency price information in real-time.
-
-- **Ta4j**: A library used for analyzing price movements, including growth and decline of cryptocurrencies.
-
 - **RabbitMQ**: Message queue for asynchronous delivery of trading signals, enabling integration with other systems.
 
 - **Ollama**: A tool for local data analysis and task automation.
-
-- **Postman**: makes a request to the API and outputs the analysis results, including key metrics and recommendations
-  based on AI.
 
 - **Docker**: Containerization platform that helps package the application with its dependencies, ensuring consistent
   environments and simplifying deployment.
@@ -87,7 +80,7 @@ the recommended actions is to sell BTC and hold ETC and TON.
 
 ### **Generation of recommendations**
 
-By visiting ```http://localhost:8088/api/analyze/TON```, we can view an analysis of the current price of the TON
+By visiting ```http://localhost:8088/api/ai/recommendation/TON```, we can view an analysis of the current price of the TON
 cryptocurrency, along with recommendations based on market stability and volatility.
 
 <img src="./assets/Ollama-example.png" alt="">
