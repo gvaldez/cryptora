@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.function.Function;
 
 
 @Slf4j
@@ -20,97 +21,86 @@ public class StatisticService {
     }
 
     public String generateStatisticReport(String ticker) {
+
         List<Quote> quotes = quoteService.getQuotesByTicker(ticker);
 
-        log.debug("AIService | Building result for the ticker: {}", ticker);
+        log.debug("StatisticService | Generate statistic report for the ticker: {}", ticker);
 
         if (quotes.isEmpty()) {
             String warn = String.format("The ticker with the name %s does not exist or information about it is unavailable.", ticker);
-            log.warn("AIService | {}", warn);
+            log.warn("StatisticService | {}", warn);
             return warn;
         }
 
         return String.format("""
-                Analysis for: %s
-                    - Average Open Price: %s
-                    - Average Close Price: %s
-                    - Average High Price: %s
-                    - Average Low Price: %s
-                    - Total Volume: %s
-                    - Total Amount: %s
-                    - Average Trade Price: %s
-                
-                """,
+                        Statistic for: %s
+                        1. Average:
+                            - Open Price: %s
+                            - Close Price: %s
+                            - High Price: %s
+                            - Low Price: %s
+                            - Trade Price: %s
+                            - Price Range: %s
+                        2. Total:
+                            - Volume: %s
+                            - Amount: %s
+                        """,
                 ticker,
                 calculateAverageOpenPrice(quotes),
                 calculateAverageClosePrice(quotes),
                 calculateAverageHighPrice(quotes),
                 calculateAverageLowPrice(quotes),
+                calculateAverageTradePrice(quotes),
+                calculateAveragePriceRange(quotes),
                 calculateTotalVolume(quotes),
-                calculateTotalAmount(quotes),
-                calculateAverageTradePrice(quotes));
+                calculateTotalAmount(quotes));
     }
 
     private BigDecimal calculateAverageOpenPrice(List<Quote> quotes) {
-        BigDecimal averageOpenPrice = quotes.stream()
-                .map(Quote::getOpenPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add)
-                .divide(BigDecimal.valueOf(quotes.size()), RoundingMode.HALF_UP);
-        log.debug("AIService | Calculating average open price: {}", averageOpenPrice);
-        return averageOpenPrice;
+        return calculateAverage(quotes, Quote::getOpenPrice);
     }
 
     private BigDecimal calculateAverageClosePrice(List<Quote> quotes) {
-        BigDecimal averageClosePrice = quotes.stream()
-                .map(Quote::getClosePrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add)
-                .divide(BigDecimal.valueOf(quotes.size()), RoundingMode.HALF_UP);
-        log.debug("AIService | Calculating average close price: {}", averageClosePrice);
-        return averageClosePrice;
+        return calculateAverage(quotes, Quote::getClosePrice);
     }
 
     private BigDecimal calculateAverageHighPrice(List<Quote> quotes) {
-        BigDecimal averageHighPrice = quotes.stream()
-                .map(Quote::getHighPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add)
-                .divide(BigDecimal.valueOf(quotes.size()), RoundingMode.HALF_UP);
-        log.debug("AIService | Calculating average high price: {}", averageHighPrice);
-        return averageHighPrice;
+        return calculateAverage(quotes, Quote::getHighPrice);
     }
 
     private BigDecimal calculateAverageLowPrice(List<Quote> quotes) {
-        BigDecimal averageLowPrice = quotes.stream()
-                .map(Quote::getLowPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add)
-                .divide(BigDecimal.valueOf(quotes.size()), RoundingMode.HALF_UP);
-        log.debug("AIService | Calculating average low price: {}", averageLowPrice);
-        return averageLowPrice;
+        return calculateAverage(quotes, Quote::getLowPrice);
+    }
+
+    private BigDecimal calculateAveragePriceRange(List<Quote> quotes) {
+        return calculateAverage(quotes, quote ->
+                quote.getHighPrice().subtract(quote.getLowPrice()));
     }
 
     private BigDecimal calculateTotalVolume(List<Quote> quotes) {
-        BigDecimal totalVolume = quotes.stream()
-                .map(Quote::getVolume)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        log.debug("AIService | Calculating total volume: {}", totalVolume);
-        return totalVolume;
+        return calculateTotal(quotes, Quote::getVolume);
     }
 
     private BigDecimal calculateTotalAmount(List<Quote> quotes) {
-        BigDecimal totalAmount = quotes.stream()
-                .map(Quote::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-        log.debug("AIService | Calculating total amount: {}", totalAmount);
-        return totalAmount;
+        return calculateTotal(quotes, Quote::getAmount);
     }
 
     private BigDecimal calculateAverageTradePrice(List<Quote> quotes) {
         BigDecimal totalAmount = calculateTotalAmount(quotes);
         BigDecimal totalVolume = calculateTotalVolume(quotes);
-        if (totalVolume.compareTo(BigDecimal.ZERO) == 0) {
-            throw new IllegalStateException("Total volume is zero, cannot calculate average trade price.");
-        }
-        BigDecimal averageTradePrice = totalAmount.divide(totalVolume, RoundingMode.HALF_UP);
-        log.debug("AIService | Calculating average trade price: {}", averageTradePrice);
-        return averageTradePrice;
+        return quotes.isEmpty() ? BigDecimal.ZERO : totalAmount.divide(totalVolume, 2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal calculateAverage(List<Quote> quotes, Function<Quote, BigDecimal> function) {
+        return quotes.isEmpty() ? BigDecimal.ZERO : quotes.stream()
+                .map(function).reduce(BigDecimal.ZERO, BigDecimal::add)
+                .divide(BigDecimal.valueOf(quotes.size()), 2, RoundingMode.HALF_UP);
+    }
+
+    private BigDecimal calculateTotal(List<Quote> quotes, Function<Quote, BigDecimal> function) {
+        return quotes.isEmpty() ? BigDecimal.ZERO : quotes.stream()
+                .map(function)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(2, RoundingMode.HALF_UP);
     }
 }

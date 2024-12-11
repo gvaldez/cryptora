@@ -25,8 +25,8 @@ public class AIService {
     }
 
     public String getAIRecommendation(String ticker) {
-        log.debug("AIService | Getting analysis for the ticker: {}", ticker);
-        return statisticService.generateStatisticReport(ticker) + generateAIResponse(ticker);
+        log.debug("AIService | Getting AI recommendation for the ticker: {}", ticker);
+        return statisticService.generateStatisticReport(ticker) + "\n" + generateAIResponse(ticker);
     }
 
     private String generateAIResponse(String ticker) {
@@ -43,13 +43,13 @@ public class AIService {
     }
 
     private String generateAIPrompt(String ticker) {
-        log.debug("AIService | Building prompt for the ticker: {}", ticker);
+        log.debug("AIService | Generate AI prompt for the ticker: {}", ticker);
         return statisticService.generateStatisticReport(ticker) + """
-                Analyze the given cryptocurrency and provide a data-driven recommendation:
-                    - Summarize market trends (price, volume, volatility).
-                    - Identify key value drivers (news, sentiment, technology).
-                    - Evaluate risks and opportunities (historical trends, recent updates).
-                    - Conclude with a [Buy/Hold/Sell] recommendation supported by data.
+                Provide a concise analysis for the given cryptocurrency, focusing on:
+                    1. Key market trends (price change, volume, volatility).
+                    2. Main value drivers (news or sentiment highlights).
+                    3. Risks and opportunities.
+                Conclude with a [Buy/Hold/Sell] recommendation based on the provided data.
                 """;
     }
 }
