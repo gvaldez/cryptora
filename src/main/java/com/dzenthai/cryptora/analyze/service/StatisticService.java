@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 
@@ -20,40 +22,36 @@ public class StatisticService {
         this.quoteService = quoteService;
     }
 
-    public String generateStatisticReport(String ticker) {
+    public Map<String, ?> generateStatisticReport(String ticker) {
 
         List<Quote> quotes = quoteService.getQuotesByTicker(ticker);
 
         log.debug("StatisticService | Generate statistic report for the ticker: {}", ticker);
 
         if (quotes.isEmpty()) {
-            String warn = String.format("The ticker with the name %s does not exist or information about it is unavailable.", ticker);
+            var warn = String.format("The ticker with the name %s does not exist or information about it is unavailable.", ticker);
             log.warn("StatisticService | {}", warn);
-            return warn;
+            throw new IllegalArgumentException(warn);
         }
 
-        return String.format("""
-                        Statistic for: %s
-                        1. Average:
-                            - Open Price: %s
-                            - Close Price: %s
-                            - High Price: %s
-                            - Low Price: %s
-                            - Trade Price: %s
-                            - Price Range: %s
-                        2. Total:
-                            - Volume: %s
-                            - Amount: %s
-                        """,
-                ticker,
-                calculateAverageOpenPrice(quotes),
-                calculateAverageClosePrice(quotes),
-                calculateAverageHighPrice(quotes),
-                calculateAverageLowPrice(quotes),
-                calculateAverageTradePrice(quotes),
-                calculateAveragePriceRange(quotes),
-                calculateTotalVolume(quotes),
-                calculateTotalAmount(quotes));
+        return Map.of("ticker", ticker,
+                "average", Map.of(
+                        "openPrice", calculateAverageOpenPrice(quotes),
+                        "closePrice", calculateAverageClosePrice(quotes),
+                        "highPrice", calculateAverageHighPrice(quotes),
+                        "lowPrice", calculateAverageLowPrice(quotes),
+                        "tradePrice", calculateAverageTradePrice(quotes),
+                        "priceRange", calculateAveragePriceRange(quotes),
+                        "total", Map.of(
+                                "volume", calculateTotalVolume(quotes),
+                                "amount", calculateTotalAmount(quotes))),
+                "additionalInfo", Map.of(
+                        "quoteEntriesCount", quotes.size(),
+                        "currentDateTime", LocalDateTime.now(),
+                        "initDateTime", quotes.stream()
+                                .map(Quote::getDatetime)
+                                .findFirst()
+                ));
     }
 
     private BigDecimal calculateAverageOpenPrice(List<Quote> quotes) {

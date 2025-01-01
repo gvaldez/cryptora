@@ -1,63 +1,34 @@
 services:
   mongo_db:
     container_name: mongo
-    domainname: mongo
-    image: mongo:5.0.2
-    restart: unless-stopped
-    env_file: ./.env
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=123456
+    image: mongo:latest
+    restart: on-failure
     ports:
       - '27017:27017'
-    volumes:
-      - mongo:/data/db
 
   rabbitmq:
     container_name: rabbitmq
-    domainname: rabbitmq
-    image: rabbitmq:3-management
+    image: rabbitmq:latest
     restart: on-failure
     ports:
       - '5672:5672'
       - '15672:15672'
-    volumes:
-      - rabbitmq:/data/rabbitmq
 
   ollama:
     container_name: ollama
-    domainname: ollama
     image: ollama/ollama:latest
+    restart: on-failure
     ports:
       - '11434:11434'
-    volumes:
-      - ollama:/data/ai
 
   app:
     container_name: cryptora
-    domainname: cryptora
     build: .
-    restart: always
+    restart: unless-stopped
     env_file: ./.env
+    ports:
+      - '8088:8088'
     depends_on:
       - mongo_db
       - rabbitmq
-    environment:
-      SPRING_APPLICATION_JSON: '{
-          "spring.data.mongodb.uri" : "mongodb://root:123456@mongo_db:27017/binance?authSource=admin",
-          "spring.rabbitmq.host" : "rabbitmq",
-          "spring.rabbitmq.port" : 5672,
-          "spring.rabbitmq.username" : "guest",
-          "spring.rabbitmq.password" : "guest",
-          "spring.ai.ollama.base-url": "http://ollama:11434",
-          "spring.ai.ollama.chat.model": "llama3.2:1b"
-        }'
-    ports:
-      - '8088:8088'
-    stdin_open: true
-    tty: true
-
-volumes:
-  mongo:
-  rabbitmq:
-  ollama:
+      - ollama

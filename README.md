@@ -80,8 +80,8 @@ the recommended actions is to sell BTC and hold ETC and TON.
 
 ### **Generation of recommendations**
 
-By visiting ```http://localhost:8088/api/ai/recommendation/TON```, we can view an analysis of the current price of the TON
-cryptocurrency, along with recommendations based on market stability and volatility.
+By visiting ```http://localhost:8088/api/v1/report/BTC```, We can view a report of the current price of BTC
+cryptocurrency, along with recommendations.
 
 <img src="./assets/Ollama-example.png" alt="">
 
@@ -156,15 +156,6 @@ to handle them flexibly and provide recommendations in real time.
    ```bash
    docker-compose up --build
    ```
-
-### **Optional**
-
-1. **Installation of Ollama with the Llama3.2:1b model.**
-
-    ```bash
-    docker exec -it ollama ollama run llama3.2:1b
-    ```
-    Or use the ollama.sh file in the root folder of the project.
 
 ---
 

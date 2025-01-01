@@ -1,14 +1,17 @@
+binance:
+  api:
+    key: ${API_KEY}
+    secret: ${API_SECRET}
+
 spring:
   application:
     name: cryptora-analyze-service
 
   data:
     mongodb:
-      username: root
-      password: 123456
-      database: binance
+      host: mongo
       port: 27017
-      host: mongodb
+      database: binance
 
   rabbitmq:
     username: guest
@@ -21,13 +24,14 @@ spring:
   ai:
     ollama:
       base-url: http://ollama:11434
+      init:
+        pull-model-strategy: when_missing
       chat:
-        model: llama3.2:1b
-
-binance:
-  api:
-    key: ${API_KEY}
-    secret: ${API_SECRET}
+        model: qwen2.5:1.5b
+        options:
+          temperature: 0.4
+          max-tokens: 200
+          top-p: 0.9
 
 cryptora:
   short:
