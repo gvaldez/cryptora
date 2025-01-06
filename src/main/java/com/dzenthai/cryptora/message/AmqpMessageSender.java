@@ -1,4 +1,4 @@
-package com.dzenthai.cryptora.analyze.message;
+package com.dzenthai.cryptora.message;
 
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Value;

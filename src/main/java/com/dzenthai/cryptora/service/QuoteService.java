@@ -1,9 +1,9 @@
-package com.dzenthai.cryptora.analyze.service;
+package com.dzenthai.cryptora.service;
 
 import com.binance.api.client.domain.market.Candlestick;
 import com.binance.api.client.domain.market.TickerPrice;
-import com.dzenthai.cryptora.analyze.entity.Quote;
-import com.dzenthai.cryptora.analyze.repository.QuoteRepo;
+import com.dzenthai.cryptora.entity.Quote;
+import com.dzenthai.cryptora.repository.QuoteRepo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

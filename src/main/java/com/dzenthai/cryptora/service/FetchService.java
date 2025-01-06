@@ -1,11 +1,11 @@
-package com.dzenthai.cryptora.analyze.service;
+package com.dzenthai.cryptora.service;
 
 import com.binance.api.client.BinanceApiRestClient;
 import com.binance.api.client.domain.market.Candlestick;
 import com.binance.api.client.domain.market.CandlestickInterval;
 import com.binance.api.client.domain.market.TickerPrice;
 import com.binance.api.client.exception.BinanceApiException;
-import com.dzenthai.cryptora.analyze.entity.data.Ticker;
+import com.dzenthai.cryptora.entity.data.Ticker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

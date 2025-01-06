@@ -1,9 +1,8 @@
-package com.dzenthai.cryptora.analyze.service;
+package com.dzenthai.cryptora.service;
 
-import com.dzenthai.cryptora.analyze.entity.Quote;
+import com.dzenthai.cryptora.entity.Quote;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -86,7 +85,8 @@ public class StatisticService {
     private BigDecimal calculateAverageTradePrice(List<Quote> quotes) {
         BigDecimal totalAmount = calculateTotalAmount(quotes);
         BigDecimal totalVolume = calculateTotalVolume(quotes);
-        return quotes.isEmpty() ? BigDecimal.ZERO : totalAmount.divide(totalVolume, 2, RoundingMode.HALF_UP);
+        return quotes.isEmpty() ? BigDecimal.ZERO :
+                totalAmount.divide(totalVolume, 2, RoundingMode.HALF_UP);
     }
 
     private BigDecimal calculateAverage(List<Quote> quotes, Function<Quote, BigDecimal> function) {

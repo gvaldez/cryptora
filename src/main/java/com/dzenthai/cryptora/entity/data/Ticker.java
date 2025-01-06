@@ -1,12 +1,9 @@
-package com.dzenthai.cryptora.analyze.entity.data;
-
-import lombok.Getter;
+package com.dzenthai.cryptora.entity.data;
 
 import java.util.List;
 import java.util.stream.Stream;
 
 
-@Getter
 public enum Ticker {
 
     /**

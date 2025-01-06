@@ -1,4 +1,4 @@
-package com.dzenthai.cryptora.analyze.service;
+package com.dzenthai.cryptora.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.prompt.Prompt;

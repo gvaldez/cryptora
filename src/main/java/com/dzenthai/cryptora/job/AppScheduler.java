@@ -1,8 +1,8 @@
-package com.dzenthai.cryptora.analyze.job;
+package com.dzenthai.cryptora.job;
 
 import com.binance.api.client.exception.BinanceApiException;
-import com.dzenthai.cryptora.analyze.service.AnalyticService;
-import com.dzenthai.cryptora.analyze.service.FetchService;
+import com.dzenthai.cryptora.service.AnalyticService;
+import com.dzenthai.cryptora.service.FetchService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableScheduling;

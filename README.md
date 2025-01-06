@@ -8,7 +8,7 @@
 
 ## **Description**
 
-**Cryptora-Analyze-Service**  is a Spring Boot application that retrieves cryptocurrency data from the Binance API and
+**Cryptora**  is a Spring Boot application that retrieves cryptocurrency data from the Binance API and
 analyzes it based on price fluctuations.
 The service tracks price movements of various cryptocurrencies and assesses both short-term and long-term trends,
 utilizing the Average True Range (ATR) with configurable periods and multipliers to enhance its insights.
@@ -134,8 +134,8 @@ to handle them flexibly and provide recommendations in real time.
 
 1. **Clone the Repository**
    ```bash
-   git clone https://github.com/dzenthai/Cryptora-Analyze-Service.git
-   cd Cryptora-Analyze-Service
+   git clone https://github.com/dzenthai/cryptora.git
+   cd cryptora
    ```
 
 2. **Add Environment Variables**

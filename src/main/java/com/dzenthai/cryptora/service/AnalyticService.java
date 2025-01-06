@@ -1,7 +1,7 @@
-package com.dzenthai.cryptora.analyze.service;
+package com.dzenthai.cryptora.service;
 
-import com.dzenthai.cryptora.analyze.entity.Quote;
-import com.dzenthai.cryptora.analyze.message.AmqpMessageSender;
+import com.dzenthai.cryptora.entity.Quote;
+import com.dzenthai.cryptora.message.AmqpMessageSender;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

@@ -2,7 +2,7 @@ FROM gradle:8.10.2-jdk23 AS builder
 WORKDIR /opt/app
 COPY build.gradle settings.gradle ./
 COPY src ./src
-RUN gradle build --no-daemon -x test
+RUN gradle build -x test --parallel --build-cache
 
 FROM openjdk:23
 WORKDIR /opt/app

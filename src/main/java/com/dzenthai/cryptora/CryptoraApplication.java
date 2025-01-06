@@ -1,7 +1,8 @@
-package com.dzenthai.cryptora.analyze;
+package com.dzenthai.cryptora;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
 
 @SpringBootApplication
 public class CryptoraApplication {

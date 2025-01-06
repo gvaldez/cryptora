@@ -1,4 +1,4 @@
-package com.dzenthai.cryptora.analyze.entity;
+package com.dzenthai.cryptora.entity;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,7 +1,7 @@
-package com.dzenthai.cryptora.analyze.controller;
+package com.dzenthai.cryptora.controller;
 
-import com.dzenthai.cryptora.analyze.service.AIService;
-import com.dzenthai.cryptora.analyze.service.StatisticService;
+import com.dzenthai.cryptora.service.AIService;
+import com.dzenthai.cryptora.service.StatisticService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

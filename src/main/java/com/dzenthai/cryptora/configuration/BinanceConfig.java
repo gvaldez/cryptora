@@ -1,4 +1,4 @@
-package com.dzenthai.cryptora.analyze.configuration;
+package com.dzenthai.cryptora.configuration;
 
 import com.binance.api.client.BinanceApiClientFactory;
 import com.binance.api.client.BinanceApiRestClient;
