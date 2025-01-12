@@ -1,7 +1,7 @@
 package com.dzenthai.cryptora.service;
 
 import com.dzenthai.cryptora.entity.Quote;
-import com.dzenthai.cryptora.message.AmqpMessageSender;
+import com.dzenthai.cryptora.message.AmqpDispatcher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -29,10 +29,6 @@ import java.util.stream.Collectors;
 @Service
 public class AnalyticService {
 
-    private final QuoteService quoteService;
-
-    private final AmqpMessageSender amqpMessageSender;
-
     @Value("${cryptora.short.time.period}")
     private Integer shortTimePeriod;
 
@@ -45,12 +41,16 @@ public class AnalyticService {
     @Value("${cryptora.atr.multiplier}")
     private Double atrMultiplier;
 
+    private final QuoteService quoteService;
+
+    private final AmqpDispatcher amqpDispatcher;
+
     public AnalyticService(
             QuoteService quoteService,
-            AmqpMessageSender amqpMessageSender
+            AmqpDispatcher amqpDispatcher
     ) {
         this.quoteService = quoteService;
-        this.amqpMessageSender = amqpMessageSender;
+        this.amqpDispatcher = amqpDispatcher;
     }
 
     public void analyzeAndGenerateSignals() {
@@ -110,7 +110,7 @@ public class AnalyticService {
 
     private void sendSignals(String action, String shortCut) {
         log.info("AnalyticService | {}: {}", shortCut, action.toUpperCase());
-        amqpMessageSender.send("%s %s".formatted(action, shortCut));
+        amqpDispatcher.send("%s %s".formatted(action, shortCut));
     }
 
     private BarSeries buildBarSeries(List<Quote> quotes) {

@@ -8,13 +8,13 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class AIService {
+public class OllamaService {
 
     private final OllamaChatModel chatModel;
 
     private final StatisticService statisticService;
 
-    public AIService(
+    public OllamaService(
             OllamaChatModel chatModel,
             StatisticService statisticService
     ) {
@@ -33,7 +33,7 @@ public class AIService {
 
     private String generateAIPrompt(String ticker) {
         log.debug("AIService | Generate AI prompt for the ticker: {}", ticker);
-        var report = statisticService.generateStatisticReport(ticker);
+        var report = statisticService.calculateStatisticReport(ticker);
 
         return String.format("""
                 Provide a recommendation for %s,

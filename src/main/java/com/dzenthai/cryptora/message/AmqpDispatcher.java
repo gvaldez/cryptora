@@ -6,14 +6,14 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-public class AmqpMessageSender {
+public class AmqpDispatcher {
 
     private final AmqpTemplate amqpTemplate;
 
     @Value("${spring.rabbitmq.queue.name}")
     private String queueName;
 
-    public AmqpMessageSender(AmqpTemplate amqpTemplate) {
+    public AmqpDispatcher(AmqpTemplate amqpTemplate) {
         this.amqpTemplate = amqpTemplate;
     }
 

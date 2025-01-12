@@ -1,6 +1,6 @@
 package com.dzenthai.cryptora.controller;
 
-import com.dzenthai.cryptora.service.AIService;
+import com.dzenthai.cryptora.service.OllamaService;
 import com.dzenthai.cryptora.service.StatisticService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,21 +16,21 @@ public class ReportController {
 
     private final StatisticService statisticService;
 
-    private final AIService aiService;
+    private final OllamaService ollamaService;
 
     public ReportController(
             StatisticService statisticService,
-            AIService aiService
+            OllamaService ollamaService
     ) {
         this.statisticService = statisticService;
-        this.aiService = aiService;
+        this.ollamaService = ollamaService;
     }
 
     @GetMapping("/{ticker}")
     public Map<String, ?> getReport(@PathVariable String ticker) {
         return Map.of(
-                "statistic", statisticService.generateStatisticReport(ticker),
-                "recommendation", aiService.generateAIResponse(ticker)
+                "statistic", statisticService.calculateStatisticReport(ticker),
+                "recommendation", ollamaService.generateAIResponse(ticker)
         );
     }
 }

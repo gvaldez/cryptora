@@ -21,7 +21,7 @@ public class StatisticService {
         this.quoteService = quoteService;
     }
 
-    public Map<String, ?> generateStatisticReport(String ticker) {
+    public Map<String, ?> calculateStatisticReport(String ticker) {
 
         List<Quote> quotes = quoteService.getQuotesByTicker(ticker);
 
