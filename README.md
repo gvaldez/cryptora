@@ -12,8 +12,6 @@
 analyzes it based on price fluctuations.
 The service tracks price movements of various cryptocurrencies and assesses both short-term and long-term trends,
 utilizing the Average True Range (ATR) with configurable periods and multipliers to enhance its insights.
-A key advantage of this application is its ability to transmit data to other services or bots, such as Telegram,
-using RabbitMQ, facilitating seamless integration and communication for generating trading signals (buy, sell, hold).
 
 ---
 
@@ -39,9 +37,6 @@ these risks.
 - **Price Trend Analysis**: With stored price data, users can perform trend analysis on cryptocurrency growth and
   decline, supported by the Ta4j library.
 
-- **Trading Signal Generation and Delivery**: Generated signals are sent via a RabbitMQ message queue, making it easy to
-  connect and deliver this data to other services or end users.
-
 - **AI**: Generation of recommendations based on cryptocurrency data analysis,
   creating trading advice, price forecasting, and trend identification.
 
@@ -54,8 +49,6 @@ these risks.
 - **Spring Boot**: Framework used for building the service.
 
 - **MongoDB**: A NoSQL database used for storing real-time cryptocurrency quotes.
-
-- **RabbitMQ**: Message queue for asynchronous delivery of trading signals, enabling integration with other systems.
 
 - **Ollama**: A tool for local data analysis and task automation.
 
@@ -101,23 +94,6 @@ In the example above:
 * Open price: The price at which the first trade occurred during the specified period.
 * Ticker: The symbol representing the cryptocurrency pair being traded.
 * Volume: The total amount of cryptocurrency traded during the specified period.
-
-### **RabbitMQ Message Queue**
-
-After analysis, recommendations are sent to a RabbitMQ queue named CryptoraQueue. RabbitMQ is used to manage messages,
-with each message representing a recommendation for a specific cryptocurrency. These messages can be processed by other
-services subscribed to the queue.
-
-<img src="./assets/Rabbitmq-example.png" alt="">
-
-The image above shows a queue with multiple messages:
-
-* Message 1: Recommendation to Hold ETH.
-* Message 2: Recommendation to Hold BTC.
-* Message 3: Recommendation to Sell TON.
-
-Each message contains additional attributes, such as priority, delivery_mode, and content_type, which allow the system
-to handle them flexibly and provide recommendations in real time.
 
 ---
 

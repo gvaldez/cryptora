@@ -1,4 +1,4 @@
-package com.dzenthai.cryptora.entity.data;
+package com.dzenthai.cryptora.model.enums;
 
 import java.util.List;
 import java.util.stream.Stream;

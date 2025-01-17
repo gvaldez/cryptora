@@ -1,4 +1,4 @@
-package com.dzenthai.cryptora.entity;
+package com.dzenthai.cryptora.model.entity;
 
 import lombok.Builder;
 import lombok.Data;

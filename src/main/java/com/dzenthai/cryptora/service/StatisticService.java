@@ -1,13 +1,17 @@
 package com.dzenthai.cryptora.service;
 
-import com.dzenthai.cryptora.entity.Quote;
+import com.dzenthai.cryptora.model.dto.Average;
+import com.dzenthai.cryptora.model.dto.Info;
+import com.dzenthai.cryptora.model.dto.Statistic;
+import com.dzenthai.cryptora.model.dto.Total;
+import com.dzenthai.cryptora.model.entity.Quote;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 
@@ -21,7 +25,7 @@ public class StatisticService {
         this.quoteService = quoteService;
     }
 
-    public Map<String, ?> calculateStatisticReport(String ticker) {
+    public Statistic calculateStatisticReport(String ticker) {
 
         List<Quote> quotes = quoteService.getQuotesByTicker(ticker);
 
@@ -33,24 +37,28 @@ public class StatisticService {
             throw new IllegalArgumentException(warn);
         }
 
-        return Map.of("ticker", ticker,
-                "average", Map.of(
-                        "openPrice", calculateAverageOpenPrice(quotes),
-                        "closePrice", calculateAverageClosePrice(quotes),
-                        "highPrice", calculateAverageHighPrice(quotes),
-                        "lowPrice", calculateAverageLowPrice(quotes),
-                        "tradePrice", calculateAverageTradePrice(quotes),
-                        "priceRange", calculateAveragePriceRange(quotes),
-                        "total", Map.of(
-                                "volume", calculateTotalVolume(quotes),
-                                "amount", calculateTotalAmount(quotes))),
-                "additionalInfo", Map.of(
-                        "quoteEntriesCount", quotes.size(),
-                        "currentDateTime", LocalDateTime.now(),
-                        "initDateTime", quotes.stream()
+        return Statistic.builder()
+                .ticker(ticker)
+                .average(Average.builder()
+                        .openPrice(calculateAverageOpenPrice(quotes))
+                        .closePrice(calculateAverageClosePrice(quotes))
+                        .highPrice(calculateAverageHighPrice(quotes))
+                        .lowPrice(calculateAverageLowPrice(quotes))
+                        .tradePrice(calculateAverageTradePrice(quotes))
+                        .priceRange(calculateAveragePriceRange(quotes))
+                        .build())
+                .total(Total.builder()
+                        .volume(calculateTotalVolume(quotes))
+                        .amount(calculateTotalAmount(quotes))
+                        .build())
+                .info(Info.builder()
+                        .quoteEntriesCount(quotes.size())
+                        .currentDateTime(LocalDateTime.now())
+                        .initDateTime(quotes.stream()
                                 .map(Quote::getDatetime)
-                                .findFirst()
-                ));
+                                .findFirst())
+                        .build())
+                .build();
     }
 
     private BigDecimal calculateAverageOpenPrice(List<Quote> quotes) {

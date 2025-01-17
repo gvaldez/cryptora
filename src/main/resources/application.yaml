@@ -13,14 +13,6 @@ spring:
       port: 27017
       database: binance
 
-  rabbitmq:
-    username: guest
-    password: guest
-    host: rabbitmq
-    port: 5672
-    queue:
-      name: CryptoraQueue
-
   ai:
     ollama:
       base-url: http://ollama:11434

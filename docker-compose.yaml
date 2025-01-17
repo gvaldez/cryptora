@@ -6,14 +6,6 @@ services:
     ports:
       - '27017:27017'
 
-  rabbitmq:
-    container_name: rabbitmq
-    image: rabbitmq:4.0.5-management
-    restart: on-failure
-    ports:
-      - '5672:5672'
-      - '15672:15672'
-
   ollama:
     container_name: ollama
     image: ollama/ollama:latest
@@ -30,5 +22,4 @@ services:
       - '8088:8088'
     depends_on:
       - mongo_db
-      - rabbitmq
       - ollama

@@ -1,7 +1,6 @@
 package com.dzenthai.cryptora.service;
 
-import com.dzenthai.cryptora.entity.Quote;
-import com.dzenthai.cryptora.message.AmqpDispatcher;
+import com.dzenthai.cryptora.model.entity.Quote;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -43,14 +42,8 @@ public class AnalyticService {
 
     private final QuoteService quoteService;
 
-    private final AmqpDispatcher amqpDispatcher;
-
-    public AnalyticService(
-            QuoteService quoteService,
-            AmqpDispatcher amqpDispatcher
-    ) {
+    public AnalyticService(QuoteService quoteService) {
         this.quoteService = quoteService;
-        this.amqpDispatcher = amqpDispatcher;
     }
 
     public void analyzeAndGenerateSignals() {
@@ -110,7 +103,6 @@ public class AnalyticService {
 
     private void sendSignals(String action, String shortCut) {
         log.info("AnalyticService | {}: {}", shortCut, action.toUpperCase());
-        amqpDispatcher.send("%s %s".formatted(action, shortCut));
     }
 
     private BarSeries buildBarSeries(List<Quote> quotes) {

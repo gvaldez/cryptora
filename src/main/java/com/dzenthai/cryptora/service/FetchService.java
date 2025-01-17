@@ -5,7 +5,7 @@ import com.binance.api.client.domain.market.Candlestick;
 import com.binance.api.client.domain.market.CandlestickInterval;
 import com.binance.api.client.domain.market.TickerPrice;
 import com.binance.api.client.exception.BinanceApiException;
-import com.dzenthai.cryptora.entity.data.Ticker;
+import com.dzenthai.cryptora.model.enums.Ticker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
