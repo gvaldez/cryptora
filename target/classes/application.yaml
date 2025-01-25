@@ -40,6 +40,28 @@ cryptora:
   atr:
     period: 14
     multiplier: 2.0
+  enter:
+    price: 0.997
+#min spread
+  exit:
+    price: 1.003
+# min margin
+    strategy:
+      percentage: 0.7
+#sale to zero
+  panic:
+    sell:
+      param: 5
+  buy:
+    quantity: 0.001
+#current budget
+  enough: 
+    asset:
+      balance: 40
+  current: 
+    trade:
+      pair: BTCUSDT
+    coin: BTC
 
 server:
   port: 8088
